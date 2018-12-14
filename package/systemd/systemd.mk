@@ -8,15 +8,31 @@ SYSTEMD_VERSION = 239
 SYSTEMD_SITE = $(call github,systemd,systemd,v$(SYSTEMD_VERSION))
 SYSTEMD_LICENSE = LGPL-2.1+, GPL-2.0+ (udev), Public Domain (few source files, see README)
 SYSTEMD_LICENSE_FILES = LICENSE.GPL2 LICENSE.LGPL2.1 README
+ifeq ($(BR2_INIT_SYSTEMD),y)
 SYSTEMD_INSTALL_STAGING = YES
+else
+SYSTEMD_INSTALL_STAGING = NO
+SYSTEMD_INSTALL_TARGET = NO
+endif
+ifeq ($(BR2_TARGET_SYSTEMD_BOOT),y)
+SYSTEMD_INSTALL_IMAGES = YES
+ifeq ($(BR2_i386),y)
+SYSTEMD_IMGARCH = ia32
+else ifeq ($(BR2_x86_64),y)
+SYSTEMD_IMGARCH = x64
+endif
+endif
 SYSTEMD_DEPENDENCIES = \
 	host-gperf \
 	host-intltool \
-	kmod \
 	libcap \
 	util-linux
 
+ifeq ($(BR2_INIT_SYSTEMD),y)
+SYSTEMD_DEPENDENCIES += \
+	kmod
 SYSTEMD_PROVIDES = udev
+endif
 
 SYSTEMD_CONF_OPTS += \
 	-Drootlibdir='/usr/lib' \
@@ -24,8 +40,6 @@ SYSTEMD_CONF_OPTS += \
 	-Dman=false \
 	-Dima=false \
 	-Dlibcryptsetup=false \
-	-Defi=false \
-	-Dgnu-efi=false \
 	-Dldconfig=false \
 	-Ddefault-dnssec=no \
 	-Dtests=false \
@@ -403,5 +417,38 @@ endef
 
 SYSTEMD_CONF_ENV = $(HOST_UTF8_LOCALE_ENV)
 SYSTEMD_NINJA_ENV = $(HOST_UTF8_LOCALE_ENV)
+
+ifeq ($(BR2_TARGET_SYSTEMD_BOOT),y)
+SYSTEMD_DEPENDENCIES += gnu-efi
+SYSTEMD_CONF_OPTS += \
+	-Defi=true \
+	-Dgnu-efi=true \
+	-Defi-cc=$(TARGET_CC) \
+	-Defi-ld=$(TARGET_LD) \
+	-Defi-libdir=$(STAGING_DIR)/usr/lib \
+	-Defi-ldsdir=$(STAGING_DIR)/usr/lib \
+	-Defi-includedir=$(STAGING_DIR)/usr/include/efi \
+
+ifneq ($(BR2_INIT_SYSTEMD),y)
+define SYSTEMD_BUILD_CMDS
+	$(TARGET_MAKE_ENV) $(SYSTEMD_NINJA_ENV) \
+		$(NINJA) $(NINJA_OPTS) -C $(SYSTEMD_SRCDIR)/build \
+		src/boot/efi/{systemd-boot$(SYSTEMD_IMGARCH).efi,linux$(SYSTEMD_IMGARCH).efi.stub}
+endef
+endif
+
+define SYSTEMD_INSTALL_IMAGES_CMDS
+	$(INSTALL) -D -m 0644 $(@D)/build/src/boot/efi/systemd-boot$(SYSTEMD_IMGARCH).efi \
+		$(BINARIES_DIR)/efi-part/EFI/BOOT/boot$(SYSTEMD_IMGARCH).efi
+	echo "boot$(SYSTEMD_IMGARCH).efi" > \
+		$(BINARIES_DIR)/efi-part/startup.nsh
+	$(INSTALL) -D -m 0644 $(SYSTEMD_PKGDIR)/loader.conf \
+		$(BINARIES_DIR)/efi-part/loader/loader.conf
+	$(INSTALL) -D -m 0644 $(SYSTEMD_PKGDIR)/buildroot.conf \
+		$(BINARIES_DIR)/efi-part/loader/entries/buildroot.conf
+endef
+else
+SYSTEMD_CONF_OPTS += -Defi=false -Dgnu-efi=false
+endif
 
 $(eval $(meson-package))

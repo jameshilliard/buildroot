@@ -7,27 +7,30 @@ config BR2_PACKAGE_SYSTEMD_ARCH_SUPPORTS
 		BR2_sh4a || BR2_sh4aeb || BR2_sparc || BR2_x86_64 || \
 		BR2_aarch64 || BR2_m68k || BR2_arc
 
+config BR2_PACKAGE_BUILD_SYSTEMD
+	bool
+
 menuconfig BR2_PACKAGE_SYSTEMD
 	bool "systemd"
-	depends on BR2_INIT_SYSTEMD
+	depends on BR2_PACKAGE_BUILD_SYSTEMD
 	depends on !BR2_STATIC_LIBS # kmod
 	depends on BR2_TOOLCHAIN_HAS_THREADS # dbus
 	depends on BR2_USE_MMU # dbus
-	select BR2_PACKAGE_HAS_UDEV
-	select BR2_PACKAGE_DBUS # runtime dependency only
+	select BR2_PACKAGE_HAS_UDEV if BR2_INIT_SYSTEMD
+	select BR2_PACKAGE_DBUS if BR2_INIT_SYSTEMD # runtime dependency only
 	select BR2_PACKAGE_LIBCAP
 	select BR2_PACKAGE_UTIL_LINUX
-	select BR2_PACKAGE_UTIL_LINUX_LIBBLKID
+	select BR2_PACKAGE_UTIL_LINUX_LIBBLKID if BR2_INIT_SYSTEMD
 	select BR2_PACKAGE_UTIL_LINUX_LIBMOUNT
-	select BR2_PACKAGE_UTIL_LINUX_BINARIES
+	select BR2_PACKAGE_UTIL_LINUX_BINARIES if BR2_INIT_SYSTEMD
 	select BR2_PACKAGE_UTIL_LINUX_MOUNT
-	select BR2_PACKAGE_UTIL_LINUX_NOLOGIN
-	select BR2_PACKAGE_UTIL_LINUX_FSCK
-	select BR2_PACKAGE_KMOD
-	select BR2_PACKAGE_BUSYBOX_SHOW_OTHERS # kmod-tools
-	select BR2_PACKAGE_KMOD_TOOLS
-	select BR2_TARGET_TZ_INFO
-	select BR2_NEEDS_HOST_UTF8_LOCALE
+	select BR2_PACKAGE_UTIL_LINUX_NOLOGIN if BR2_INIT_SYSTEMD
+	select BR2_PACKAGE_UTIL_LINUX_FSCK if BR2_INIT_SYSTEMD
+	select BR2_PACKAGE_KMOD if BR2_INIT_SYSTEMD
+	select BR2_PACKAGE_BUSYBOX_SHOW_OTHERS if BR2_INIT_SYSTEMD # kmod-tools
+	select BR2_PACKAGE_KMOD_TOOLS if BR2_INIT_SYSTEMD
+	select BR2_TARGET_TZ_INFO if BR2_INIT_SYSTEMD
+	select BR2_NEEDS_HOST_UTF8_LOCALE if BR2_INIT_SYSTEMD
 	help
 	  systemd is a system and service manager for Linux,
 	  compatible with SysV and LSB init scripts. systemd provides
@@ -76,9 +79,11 @@ if BR2_PACKAGE_SYSTEMD
 
 config BR2_PACKAGE_PROVIDES_UDEV
 	default "systemd"
+	depends on BR2_INIT_SYSTEMD
 
 config BR2_PACKAGE_SYSTEMD_JOURNAL_GATEWAY
 	bool "HTTP server for journal events"
+	depends on BR2_INIT_SYSTEMD
 	select BR2_PACKAGE_LIBMICROHTTPD
 	help
 	  systemd-journal-gatewayd serves journal events over the
@@ -89,6 +94,7 @@ config BR2_PACKAGE_SYSTEMD_JOURNAL_GATEWAY
 
 config BR2_PACKAGE_SYSTEMD_BACKLIGHT
 	bool "enable backlight support"
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-backlight is a service that restores the display
 	  backlight brightness at early boot and saves it at shutdown.
@@ -97,6 +103,7 @@ config BR2_PACKAGE_SYSTEMD_BACKLIGHT
 
 config BR2_PACKAGE_SYSTEMD_BINFMT
 	bool "enable binfmt tool"
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-binfmt is an early boot service that registers
 	  additional binary formats for executables in the kernel.
@@ -105,6 +112,7 @@ config BR2_PACKAGE_SYSTEMD_BINFMT
 
 config BR2_PACKAGE_SYSTEMD_COREDUMP
 	bool "enable coredump hook"
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-coredump can be used as a helper binary by the
 	  kernel when a user space program receives a fatal signal and
@@ -114,6 +122,7 @@ config BR2_PACKAGE_SYSTEMD_COREDUMP
 
 config BR2_PACKAGE_SYSTEMD_FIRSTBOOT
 	bool "enable firstboot support"
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-firstboot initializes the most basic system settings
 	  interactively on the first boot.
@@ -122,6 +131,7 @@ config BR2_PACKAGE_SYSTEMD_FIRSTBOOT
 
 config BR2_PACKAGE_SYSTEMD_HIBERNATE
 	bool "enable hibernation support"
+	depends on BR2_INIT_SYSTEMD
 	help
 	  When this features is enabled, additional tools and services
 	  are built to support suspending and resuming the system.
@@ -131,6 +141,7 @@ config BR2_PACKAGE_SYSTEMD_HIBERNATE
 config BR2_PACKAGE_SYSTEMD_HOSTNAMED
 	bool "enable hostname daemon"
 	default y
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-hostnamed is a system service that may be used as a
 	  mechanism to change the system's hostname.
@@ -140,6 +151,7 @@ config BR2_PACKAGE_SYSTEMD_HOSTNAMED
 config BR2_PACKAGE_SYSTEMD_HWDB
 	bool "enable hwdb installation"
 	default y
+	depends on BR2_INIT_SYSTEMD
 	help
 	  Enables hardware database installation to /usr/lib/udev/hwdb.d
 
@@ -150,6 +162,7 @@ config BR2_PACKAGE_SYSTEMD_HWDB
 
 config BR2_PACKAGE_SYSTEMD_IMPORTD
 	bool "enable import daemon"
+	depends on BR2_INIT_SYSTEMD
 	depends on BR2_PACKAGE_LIBGPG_ERROR_ARCH_SUPPORTS # libgcrypt
 	select BR2_PACKAGE_LIBCURL
 	select BR2_PACKAGE_LIBGCRYPT
@@ -166,6 +179,7 @@ config BR2_PACKAGE_SYSTEMD_IMPORTD
 
 config BR2_PACKAGE_SYSTEMD_LOCALED
 	bool "enable locale daemon"
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-localed is a system service that may be used as
 	  mechanism to change the system locale settings, as well as
@@ -175,6 +189,7 @@ config BR2_PACKAGE_SYSTEMD_LOCALED
 
 config BR2_PACKAGE_SYSTEMD_LOGIND
 	bool "enable login daemon"
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-logind is a system service that manages user logins.
 
@@ -182,6 +197,7 @@ config BR2_PACKAGE_SYSTEMD_LOGIND
 
 config BR2_PACKAGE_SYSTEMD_MACHINED
 	bool "enable machine daemon"
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-machined is a system service that keeps track of
 	  virtual machines and containers, and processes belonging to
@@ -192,6 +208,7 @@ config BR2_PACKAGE_SYSTEMD_MACHINED
 config BR2_PACKAGE_SYSTEMD_MYHOSTNAME
 	bool "enable myhostname NSS plugin"
 	default y
+	depends on BR2_INIT_SYSTEMD
 	help
 	  nss-myhostname is a plug-in module for the GNU Name Service
 	  Switch (NSS) functionality of the GNU C Library (glibc),
@@ -203,6 +220,7 @@ config BR2_PACKAGE_SYSTEMD_MYHOSTNAME
 config BR2_PACKAGE_SYSTEMD_NETWORKD
 	bool "enable network manager"
 	default y
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-networkd is a system service that manages networks.
 	  It detects and configures network devices as they appear, as
@@ -215,6 +233,7 @@ config BR2_PACKAGE_SYSTEMD_NETWORKD
 
 config BR2_PACKAGE_SYSTEMD_POLKIT
 	bool "enable polkit support"
+	depends on BR2_INIT_SYSTEMD
 	depends on BR2_TOOLCHAIN_USES_GLIBC # polkit
 	select BR2_PACKAGE_POLKIT
 	help
@@ -226,10 +245,12 @@ config BR2_PACKAGE_SYSTEMD_POLKIT
 	  http://wiki.freedesktop.org/www/Software/polkit/
 
 comment "polkit support needs a glibc toolchain"
+	depends on BR2_INIT_SYSTEMD
 	depends on !BR2_TOOLCHAIN_USES_GLIBC
 
 config BR2_PACKAGE_SYSTEMD_QUOTACHECK
 	bool "enable quotacheck tools"
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-quotacheck is a service responsible for file system
 	  quota checks. It is run once at boot after all necessary
@@ -240,6 +261,7 @@ config BR2_PACKAGE_SYSTEMD_QUOTACHECK
 
 config BR2_PACKAGE_SYSTEMD_RANDOMSEED
 	bool "enable random-seed support"
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-random-seed is a service that restores the random
 	  seed of the system at early boot and saves it at
@@ -251,6 +273,7 @@ config BR2_PACKAGE_SYSTEMD_RANDOMSEED
 config BR2_PACKAGE_SYSTEMD_RESOLVED
 	bool "enable resolve daemon"
 	default y
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-resolved is a system service that provides network
 	  name resolution to local applications. It implements a
@@ -261,6 +284,7 @@ config BR2_PACKAGE_SYSTEMD_RESOLVED
 
 config BR2_PACKAGE_SYSTEMD_RFKILL
 	bool "enable rfkill tools"
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-rfkill is a service that restores the RF kill switch
 	  state at early boot and saves it at shutdown.
@@ -269,6 +293,7 @@ config BR2_PACKAGE_SYSTEMD_RFKILL
 
 config BR2_PACKAGE_SYSTEMD_SMACK_SUPPORT
 	bool "enable SMACK support"
+	depends on BR2_INIT_SYSTEMD
 	select BR2_PACKAGE_ATTR
 	select BR2_PACKAGE_SMACK
 	help
@@ -283,6 +308,7 @@ config BR2_PACKAGE_SYSTEMD_SMACK_SUPPORT
 
 config BR2_PACKAGE_SYSTEMD_SYSUSERS
 	bool "enable sysusers support"
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-sysusers creates system users and groups, based on
 	  the file format and location specified in sysusers.d(5).
@@ -292,6 +318,7 @@ config BR2_PACKAGE_SYSTEMD_SYSUSERS
 config BR2_PACKAGE_SYSTEMD_TIMEDATED
 	bool "enable timedate daemon"
 	default y
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-timedated is a system service that may be used as a
 	  mechanism to change the system clock and timezone, as well
@@ -302,6 +329,7 @@ config BR2_PACKAGE_SYSTEMD_TIMEDATED
 config BR2_PACKAGE_SYSTEMD_TIMESYNCD
 	bool "enable timesync daemon"
 	default y
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-timesyncd is a service that may be used to
 	  synchronize the local system clock with a Network Time
@@ -315,6 +343,7 @@ config BR2_PACKAGE_SYSTEMD_TIMESYNCD
 config BR2_PACKAGE_SYSTEMD_TMPFILES
 	bool "enable tmpfiles support"
 	default y
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-tmpfiles creates, deletes, and cleans up volatile
 	  and temporary files and directories, based on the
@@ -325,6 +354,7 @@ config BR2_PACKAGE_SYSTEMD_TMPFILES
 
 config BR2_PACKAGE_SYSTEMD_VCONSOLE
 	bool "enable vconsole tool"
+	depends on BR2_INIT_SYSTEMD
 	help
 	  systemd-vconsole-setup is an early boot service that
 	  configures the virtual console font and console keymap.
