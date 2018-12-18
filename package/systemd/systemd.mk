@@ -4,6 +4,7 @@
 #
 ################################################################################
 
+# When updating this version, please also update it in boot/systemd-boot/
 SYSTEMD_VERSION = 243
 SYSTEMD_SITE = $(call github,systemd,systemd,v$(SYSTEMD_VERSION))
 SYSTEMD_LICENSE = LGPL-2.1+, GPL-2.0+ (udev), Public Domain (few source files, see README)
