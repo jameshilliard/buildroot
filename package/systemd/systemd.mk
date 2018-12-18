@@ -24,8 +24,6 @@ SYSTEMD_CONF_OPTS += \
 	-Dman=false \
 	-Dima=false \
 	-Dlibcryptsetup=false \
-	-Defi=false \
-	-Dgnu-efi=false \
 	-Dldconfig=false \
 	-Ddefault-dnssec=no \
 	-Dtests=false \
@@ -330,6 +328,12 @@ ifeq ($(BR2_PACKAGE_SYSTEMD_HIBERNATE),y)
 SYSTEMD_CONF_OPTS += -Dhibernate=true
 else
 SYSTEMD_CONF_OPTS += -Dhibernate=false
+endif
+
+ifeq ($(BR2_PACKAGE_SYSTEMD_BOOT),y)
+SYSTEMD_CONF_OPTS += -Defi=true -Dgnu-efi=true
+else
+SYSTEMD_CONF_OPTS += -Defi=false -Dgnu-efi=false
 endif
 
 SYSTEMD_FALLBACK_HOSTNAME = $(call qstrip,$(BR2_TARGET_GENERIC_HOSTNAME))
