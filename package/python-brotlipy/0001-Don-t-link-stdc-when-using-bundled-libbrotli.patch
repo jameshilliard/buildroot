@@ -1,0 +1,28 @@
+From 2a1273bbb8d5764ad6d9a15e95bf7990c5a29393 Mon Sep 17 00:00:00 2001
+From: James Hilliard <james.hilliard1@gmail.com>
+Date: Fri, 15 Mar 2019 20:08:05 -0600
+Subject: [PATCH] Don't link stdc++ when using bundled libbrotli
+
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+[Upstream status:
+https://github.com/python-hyper/brotlipy/pull/151]
+---
+ src/brotli/build.py | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/src/brotli/build.py b/src/brotli/build.py
+index 562376e..a200e89 100644
+--- a/src/brotli/build.py
++++ b/src/brotli/build.py
+@@ -5,8 +5,6 @@ from cffi import FFI
+ ffi = FFI()
+ 
+ libraries = ['libbrotli']
+-if 'win32' not in str(sys.platform).lower():
+-    libraries.append('stdc++')
+ 
+ 
+ ffi.set_source(
+-- 
+2.19.1
+

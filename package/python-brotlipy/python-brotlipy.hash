@@ -1,0 +1,6 @@
+# md5, sha256 from https://pypi.org/pypi/brotlipy/json
+md5	300a63158cec5b74082625dd9a2ae4d2  brotlipy-0.7.0.tar.gz
+sha256	36def0b859beaf21910157b4c33eb3b06d8ce459c942102f16988cca6ea164df  brotlipy-0.7.0.tar.gz
+# Locally computed sha256 checksums
+sha256	f3e9c29e3db36dc305a4be68a8a225f93949852ce2d19b5b0a3c099eee6509c5  LICENSE
+sha256	3d180008e36922a4e8daec11c34c7af264fed5962d07924aea928c38e8663c94  libbrotli/LICENSE

@@ -1,0 +1,7 @@
+config BR2_PACKAGE_PYTHON_BROTLIPY
+	bool "python-brotlipy"
+	select BR2_PACKAGE_PYTHON_CFFI # runtime
+	help
+	  Python binding to the Brotli library.
+
+	  https://github.com/python-hyper/brotlipy/
