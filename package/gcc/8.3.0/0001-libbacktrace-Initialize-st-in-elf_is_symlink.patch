@@ -1,0 +1,32 @@
+From a6c384f38421ed62d5acac30a90dc92de5cf4055 Mon Sep 17 00:00:00 2001
+From: James Hilliard <james.hilliard1@gmail.com>
+Date: Mon, 18 Mar 2019 09:17:39 +0800
+Subject: [PATCH] [libbacktrace] Initialize st in elf_is_symlink
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Fixes error: ‘st.st_mode’ may be used uninitialized in this function
+
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+[Upstream status: https://patchwork.ozlabs.org/patch/1057631/]
+---
+ libbacktrace/elf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libbacktrace/elf.c b/libbacktrace/elf.c
+index f4863f0bea5..6cc2a7dec22 100644
+--- a/libbacktrace/elf.c
++++ b/libbacktrace/elf.c
+@@ -765,7 +765,7 @@ elf_syminfo (struct backtrace_state *state, uintptr_t addr,
+ static int
+ elf_is_symlink (const char *filename)
+ {
+-  struct stat st;
++  struct stat st={0};
+ 
+   if (lstat (filename, &st) < 0)
+     return 0;
+-- 
+2.17.1
+
