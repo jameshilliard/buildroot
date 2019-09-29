@@ -1,6 +1,6 @@
-config BR2_PACKAGE_HOST_CMAKE
-	bool "host cmake"
-	depends on BR2_HOST_GCC_AT_LEAST_4_8
+config BR2_PACKAGE_HOST_CMAKE_COMPAT
+	bool "host cmake-compat"
+	depends on !BR2_HOST_GCC_AT_LEAST_4_8
 	help
 	  CMake is an open-source, cross-platform family of tools
 	  designed to build, test and package software. CMake is used
@@ -8,5 +8,8 @@ config BR2_PACKAGE_HOST_CMAKE
 	  platform and compiler independent configuration files, and
 	  generate native makefiles and workspaces that can be used in
 	  the compiler environment of your choice.
+
+	  This provides compatibility with toolchains that don't
+	  support c++11.
 
 	  http://www.cmake.org/
