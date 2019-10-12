@@ -105,6 +105,11 @@ config BR2_HOSTARCH_NEEDS_IA32_COMPILER
 config BR2_NEEDS_HOST_UTF8_LOCALE
 	bool
 
+# Hidden boolean selected by packages that need the host to have a
+# cmake >= 3.10.
+config BR2_NEEDS_HOST_CMAKE_3_10
+	bool
+
 source "arch/Config.in"
 
 menu "Build options"
