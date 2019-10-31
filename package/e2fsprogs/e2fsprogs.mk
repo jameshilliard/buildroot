@@ -74,5 +74,14 @@ define HOST_E2FSPROGS_INSTALL_CMDS
 	$(HOST_MAKE_ENV) $(MAKE1) -C $(@D) install install-libs
 endef
 
+define E2FSPROGS_INSTALL_INIT_SYSTEMD
+	mkdir -p $(TARGET_DIR)/etc/systemd/system/default.target.wants
+	ln -sf ../../../../lib/systemd/system/e2scrub_reap.service \
+		$(TARGET_DIR)/etc/systemd/system/default.target.wants/e2scrub_reap.service
+	mkdir -p $(TARGET_DIR)/etc/systemd/system/timers.target.wants
+	ln -sf ../../../../lib/systemd/system/e2scrub_all.timer \
+		$(TARGET_DIR)/etc/systemd/system/timers.target.wants/e2scrub_all.timer
+endef
+
 $(eval $(autotools-package))
 $(eval $(host-autotools-package))
