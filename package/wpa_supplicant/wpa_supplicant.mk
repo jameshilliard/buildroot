@@ -227,6 +227,17 @@ define WPA_SUPPLICANT_INSTALL_INIT_SYSTEMD
 		$(TARGET_DIR)/usr/lib/systemd/system/wpa_supplicant-nl80211@.service
 	$(INSTALL) -m 0644 -D $(@D)/$(WPA_SUPPLICANT_SUBDIR)/systemd/wpa_supplicant-wired@.service \
 		$(TARGET_DIR)/usr/lib/systemd/system/wpa_supplicant-wired@.service
+	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
+	ln -fs ../../../../usr/lib/systemd/system/wpa_supplicant.service \
+		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/wpa_supplicant.service
+	ln -fs ../../../../usr/lib/systemd/system/wpa_supplicant@.service \
+		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/wpa_supplicant@.service
+	ln -fs ../../../../usr/lib/systemd/system/wpa_supplicant-nl80211@.service \
+		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/wpa_supplicant-nl80211@.service
+	ln -fs ../../../../usr/lib/systemd/system/wpa_supplicant-wired@.service \
+		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/wpa_supplicant-wired@.service
+	ln -fs ../../../usr/lib/systemd/system/wpa_supplicant.service \
+		$(TARGET_DIR)/etc/systemd/system/dbus-fi.w1.wpa_supplicant1.service
 endef
 
 $(eval $(generic-package))
