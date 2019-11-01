@@ -26,4 +26,10 @@ else
 DRBD_UTILS_CONF_OPTS += --with-udev=no
 endif
 
+define DRBD_UTILS_INSTALL_INIT_SYSTEMD
+	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
+	ln -sf ../../../../lib/systemd/system/drbd.service \
+		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/drbd.service
+endef
+
 $(eval $(autotools-package))
