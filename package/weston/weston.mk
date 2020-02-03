@@ -70,28 +70,27 @@ endif
 
 ifeq ($(BR2_PACKAGE_WESTON_FBDEV),y)
 WESTON_CONF_OPTS += \
-	--enable-fbdev-compositor \
-	WESTON_NATIVE_BACKEND=fbdev-backend.so
+	--enable-fbdev-compositor
 else
 WESTON_CONF_OPTS += --disable-fbdev-compositor
 endif
 
 ifeq ($(BR2_PACKAGE_WESTON_DRM),y)
 WESTON_CONF_OPTS += \
-	--enable-drm-compositor \
-	WESTON_NATIVE_BACKEND=drm-backend.so
+	--enable-drm-compositor
 else
 WESTON_CONF_OPTS += --disable-drm-compositor
 endif
 
 ifeq ($(BR2_PACKAGE_WESTON_X11),y)
 WESTON_CONF_OPTS += \
-	--enable-x11-compositor \
-	WESTON_NATIVE_BACKEND=x11-backend.so
+	--enable-x11-compositor
 WESTON_DEPENDENCIES += libxcb xlib_libX11
 else
 WESTON_CONF_OPTS += --disable-x11-compositor
 endif
+
+WESTON_CONF_OPTS += WESTON_NATIVE_BACKEND=$(call qstrip,$(BR2_PACKAGE_WESTON_DEFAULT_COMPOSITOR))
 
 ifeq ($(BR2_PACKAGE_WESTON_XWAYLAND),y)
 WESTON_CONF_OPTS += --enable-xwayland
