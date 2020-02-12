@@ -57,7 +57,13 @@ ifeq ($(BR2_PACKAGE_MESA3D_OPENGL_GLX),y)
 #  dri          : dri based GLX requires at least one DRI driver || dri based GLX requires shared-glapi
 #  xlib         : xlib conflicts with any dri driver
 #  gallium-xlib : Gallium-xlib based GLX requires at least one gallium driver || Gallium-xlib based GLX requires softpipe or llvmpipe || gallium-xlib conflicts with any dri driver.
+ifeq ($(BR2_PACKAGE_MESA3D_OPENGL_GLX_DRI),y)
 MESA3D_CONF_OPTS += -Dglx=dri
+else ifeq ($(BR2_PACKAGE_MESA3D_OPENGL_GLX_XLIB),y)
+MESA3D_CONF_OPTS += -Dglx=xlib
+else ifeq ($(BR2_PACKAGE_MESA3D_OPENGL_GLX_GALLIUM_XLIB),y)
+MESA3D_CONF_OPTS += -Dglx=gallium-xlib
+endif
 ifeq ($(BR2_PACKAGE_MESA3D_NEEDS_XA),y)
 MESA3D_CONF_OPTS += -Dgallium-xa=true
 else
