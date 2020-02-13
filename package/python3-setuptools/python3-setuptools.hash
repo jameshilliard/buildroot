@@ -1,1 +1,4 @@
-../python-setuptools/python-setuptools.hash
+# From https://pypi.org/pypi/setuptools/json
+md5  684e00a094af81fac87ffe0bcf5732c4  setuptools-54.1.2.tar.gz
+sha256  ebd0148faf627b569c8d2a1b20f5d3b09c873f12739d71c7ee88f037d5be82ff  setuptools-54.1.2.tar.gz
+sha256  db3f0246b1f9278f15845b99fec478b8b506eb76487993722f8c6e254285faf8  LICENSE
