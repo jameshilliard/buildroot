@@ -79,6 +79,12 @@ while read f; do
 		continue
 	fi
 
+	# If architecture is "None" and file extension is ".go", assume
+	# it is a guile module
+	if test "${arch}" = "None" -a "${f: -3}" = ".go" ; then
+		continue
+	fi
+
 	# Architecture is correct
 	if test "${arch}" = "${arch_name}" ; then
 		continue
