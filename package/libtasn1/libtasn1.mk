@@ -14,3 +14,4 @@ LIBTASN1_INSTALL_STAGING = YES
 LIBTASN1_CONF_ENV = MAKEINFO="true"
 
 $(eval $(autotools-package))
+$(eval $(host-autotools-package))
