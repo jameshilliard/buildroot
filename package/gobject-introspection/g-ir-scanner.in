@@ -19,4 +19,4 @@ ${HOST_DIR}/bin/g-ir-scanner \
 --lib-dirs-envvar=GIR_EXTRA_LIBS_PATH \
 --use-binary-wrapper=$(dirname $0)/g-ir-scanner-qemuwrapper \
 --use-ldd-wrapper=$(dirname $0)/g-ir-scanner-lddwrapper \
---add-include-path=$(dirname $0)/../share/gir-1.0 "$@"
+--add-include-path=$(dirname $0)/../usr/share/gir-1.0 "$@"
