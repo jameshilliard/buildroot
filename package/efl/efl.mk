@@ -20,8 +20,8 @@ EFL_LICENSE_FILES = \
 
 EFL_INSTALL_STAGING = YES
 
-EFL_DEPENDENCIES = host-pkgconf host-efl host-luajit dbus freetype \
-	jpeg luajit lz4 zlib
+EFL_DEPENDENCIES = host-pkgconf host-efl dbus freetype \
+	jpeg lz4 zlib
 
 # Configure options:
 # --disable-lua-old: build elua for the target.
@@ -38,11 +38,9 @@ EFL_CONF_OPTS = \
 	--with-eldbus_codegen=$(HOST_DIR)/bin/eldbus-codegen \
 	--with-elementary-codegen=$(HOST_DIR)/bin/elementary_codegen \
 	--with-elm-prefs-cc=$(HOST_DIR)/bin/elm_prefs_cc \
-	--with-elua=$(HOST_DIR)/bin/elua \
 	--with-eolian-gen=$(HOST_DIR)/bin/eolian_gen \
 	--disable-image-loader-jp2k \
 	--with-net-control=none \
-	--disable-lua-old \
 	--disable-sdl \
 	--disable-spectre \
 	--disable-xinput22 \
@@ -90,6 +88,16 @@ EFL_CONF_OPTS += --enable-fribidi
 EFL_DEPENDENCIES += libfribidi
 else
 EFL_CONF_OPTS += --disable-fribidi
+endif
+
+ifeq ($(BR2_PACKAGE_LUAJIT),y)
+EFL_CONF_OPTS += \
+	--with-elua=$(HOST_DIR)/usr/bin/elua \
+	--disable-lua-old
+EFL_DEPENDENCIES += host-luajit luajit
+else ifeq ($(BR2_PACKAGE_LUA),y)
+EFL_CONF_OPTS += --enable-lua-old
+EFL_DEPENDENCIES += host-lua lua
 endif
 
 ifeq ($(BR2_PACKAGE_GSTREAMER1)$(BR2_PACKAGE_GST1_PLUGINS_BASE),yy)
@@ -320,7 +328,6 @@ HOST_EFL_DEPENDENCIES = \
 	host-libglib2 \
 	host-libjpeg \
 	host-libpng \
-	host-luajit \
 	host-zlib
 
 # Configure options:
@@ -351,7 +358,6 @@ HOST_EFL_CONF_OPTS += \
 	--disable-libmount \
 	--disable-libraw \
 	--disable-librsvg \
-	--disable-lua-old \
 	--disable-multisense \
 	--disable-physics \
 	--disable-poppler \
@@ -377,6 +383,14 @@ ifeq ($(BR2_PACKAGE_EFL_EOLIAN_CPP),y)
 HOST_EFL_CONF_OPTS += --enable-cxx-bindings
 else
 HOST_EFL_CONF_OPTS += --disable-cxx-bindings
+endif
+
+ifeq ($(BR2_PACKAGE_LUAJIT),y)
+HOST_EFL_CONF_OPTS += --disable-lua-old
+HOST_EFL_DEPENDENCIES += host-luajit
+else ifeq ($(BR2_PACKAGE_LUA),y)
+HOST_EFL_CONF_OPTS += --enable-lua-old
+HOST_EFL_DEPENDENCIES += host-lua
 endif
 
 # Always disable upower system module from host as it's
