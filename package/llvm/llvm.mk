@@ -214,8 +214,7 @@ HOST_LLVM_CONF_OPTS += \
 # We need to activate LLVM_INCLUDE_TOOLS, otherwise it does not generate
 # libLLVM.so
 LLVM_CONF_OPTS += \
-	-DLLVM_INCLUDE_TOOLS=ON \
-	-DLLVM_BUILD_TOOLS=OFF
+	-DLLVM_INCLUDE_TOOLS=ON
 
 ifeq ($(BR2_PACKAGE_LLVM_RTTI),y)
 HOST_LLVM_CONF_OPTS += -DLLVM_ENABLE_RTTI=ON
@@ -278,11 +277,24 @@ LLVM_CONF_OPTS += \
 # directories from STAGING_DIR.
 # output/staging/usr/bin/llvm-config --includedir
 # output/staging/usr/include
-define HOST_LLVM_COPY_LLVM_CONFIG_TO_STAGING_DIR
+define LLVM_COPY_LLVM_CONFIG_TO_STAGING_DIR
 	$(INSTALL) -D -m 0755 $(HOST_DIR)/bin/llvm-config \
 		$(STAGING_DIR)/usr/bin/llvm-config
 endef
-HOST_LLVM_POST_INSTALL_HOOKS = HOST_LLVM_COPY_LLVM_CONFIG_TO_STAGING_DIR
+HOST_LLVM_POST_INSTALL_HOOKS = LLVM_COPY_LLVM_CONFIG_TO_STAGING_DIR
+
+# The llvm-symbolizer binary is used by the Compiler-RT Fuzzer
+# and AddressSanitizer tools for stack traces.
+# If we set -DLLVM_BUILD_TOOLS=ON we need to re-copy host llvm-config to
+# replace the target llvm-config variant in staging that gets installed.
+ifeq ($(BR2_PACKAGE_COMPILER_RT),y)
+LLVM_CONF_OPTS += \
+	-DLLVM_BUILD_TOOLS=ON
+LLVM_POST_INSTALL_STAGING_HOOKS = LLVM_COPY_LLVM_CONFIG_TO_STAGING_DIR
+else
+LLVM_CONF_OPTS += \
+	-DLLVM_BUILD_TOOLS=OFF
+endif
 
 # By default llvm-tblgen is built and installed on the target but it is
 # not necessary. Also erase LLVMHello.so from /usr/lib
