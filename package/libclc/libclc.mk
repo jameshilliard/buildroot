@@ -4,43 +4,23 @@
 #
 ################################################################################
 
-# Use the latest commit from release_90 branch.
-LIBCLC_VERSION = d1cbc92e2ceee59963f5c3a576382e5bba31f060
-LIBCLC_SITE = https://github.com/llvm-mirror/libclc
-LIBCLC_SITE_METHOD = git
+LIBCLC_VERSION = 11.1.0
+LIBCLC_SITE = https://github.com/llvm/llvm-project/releases/download/llvmorg-$(LIBCLC_VERSION)
+LIBCLC_SOURCE = libclc-$(LIBCLC_VERSION).src.tar.xz
 LIBCLC_LICENSE = Apache-2.0 with exceptions or MIT
 LIBCLC_LICENSE_FILES = LICENSE.TXT
 
 LIBCLC_DEPENDENCIES = host-clang host-llvm
 LIBCLC_INSTALL_STAGING = YES
 
-# C++ compiler is used to build a small tool (prepare-builtins) for the host.
-# It must be built with the C++ compiler from the host.
+# CMAKE_*_COMPILER_FORCED=ON skips testing the tools and assumes
+# llvm-config provided values
 #
-# The headers are installed in /usr/share and not /usr/include,
-# because they are needed at runtime on the target to build the OpenCL
-# kernels.
+# CMAKE_CXX_COMPILER has to be set to the host compiler to build a host
+# 'prepare_builtins' tool used during the build process
 LIBCLC_CONF_OPTS = \
-	--with-llvm-config=$(HOST_DIR)/usr/bin/llvm-config \
-	--prefix=/usr \
-	--includedir=/usr/share \
-	--pkgconfigdir=/usr/lib/pkgconfig \
-	--with-cxx-compiler=$(HOSTCXX_NOCCACHE)
+	-DCMAKE_CLC_COMPILER_FORCED=ON \
+	-DCMAKE_LLAsm_COMPILER_FORCED=ON \
+	-DCMAKE_CXX_COMPILER="$(CMAKE_HOST_CXX_COMPILER)"
 
-define LIBCLC_CONFIGURE_CMDS
-	(cd $(@D); $(TARGET_CONFIGURE_OPTS) ./configure.py $(LIBCLC_CONF_OPTS))
-endef
-
-define LIBCLC_BUILD_CMDS
-	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D)
-endef
-
-define LIBCLC_INSTALL_TARGET_CMDS
-	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) DESTDIR=$(TARGET_DIR) install
-endef
-
-define LIBCLC_INSTALL_STAGING_CMDS
-	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) DESTDIR=$(STAGING_DIR) install
-endef
-
-$(eval $(generic-package))
+$(eval $(cmake-package))
