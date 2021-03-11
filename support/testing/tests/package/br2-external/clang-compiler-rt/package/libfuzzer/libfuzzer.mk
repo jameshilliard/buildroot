@@ -12,7 +12,7 @@ LIBFUZZER_DEPENDENCIES = compiler-rt
 
 define LIBFUZZER_BUILD_CMDS
 	$(HOST_DIR)/bin/clang++ --sysroot=$(STAGING_DIR) \
-		-B $(HOST_DIR)/opt/ext-toolchain -fsanitize=address,fuzzer \
+		-fsanitize=address,fuzzer \
 		$(@D)/tutorial/libFuzzer/fuzz_me.cc \
 		-o $(@D)/fuzz_me
 endef
