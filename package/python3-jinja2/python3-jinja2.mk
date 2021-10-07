@@ -15,6 +15,6 @@ PYTHON3_JINJA2_CPE_ID_PRODUCT = jinja2
 
 HOST_PYTHON3_JINJA2_NEEDS_HOST_PYTHON = python3
 # In host build, setup.py tries to download markupsafe if it is not installed
-HOST_PYTHON3_JINJA2_DEPENDENCIES = host-python3-markupsafe
+HOST_PYTHON3_JINJA2_DEPENDENCIES = host-python-markupsafe
 
 $(eval $(host-python-package))
