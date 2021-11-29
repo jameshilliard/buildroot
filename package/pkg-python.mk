@@ -120,8 +120,8 @@ ifndef $(2)_SETUP_TYPE
  endif
 endif
 
-# Distutils
-ifeq ($$($(2)_SETUP_TYPE),distutils)
+# Distutils/flit
+ifneq ($$(filter distutils flit,$$($(2)_SETUP_TYPE)),)
 ifeq ($(4),target)
 $(2)_BASE_ENV         = $$(PKG_PYTHON_DISTUTILS_ENV)
 $(2)_BASE_BUILD_TGT   = build
@@ -149,7 +149,7 @@ $(2)_BASE_BUILD_OPTS   =
 $(2)_BASE_INSTALL_OPTS = $$(HOST_PKG_PYTHON_SETUPTOOLS_INSTALL_OPTS)
 endif
 else
-$$(error "Invalid $(2)_SETUP_TYPE. Valid options are 'distutils' or 'setuptools'")
+$$(error "Invalid $(2)_SETUP_TYPE. Valid options are 'distutils', 'setuptools' or 'flit")
 endif
 
 # Target packages need both the python interpreter on the target (for
@@ -212,6 +212,10 @@ $(2)_DEPENDENCIES += $$(if $$(filter host-python-setuptools,$(1)),,host-python-s
 endif
 endif # SETUP_TYPE
 
+ifeq ($$($(2)_SETUP_TYPE),flit)
+$(2)_DEPENDENCIES += $$(if $$(filter host-python-flit host-python-flit-core,$(1)),,host-python-flit-core)
+endif # SETUP_TYPE
+
 # Python interpreter to use for building the package.
 #
 # We may want to specify the python interpreter to be used for building a
@@ -236,12 +240,32 @@ $(2)_PYTHON_INTERPRETER = $$(HOST_DIR)/bin/$$($(2)_NEEDS_HOST_PYTHON)
 endif
 endif
 
+ifeq ($$($(2)_SETUP_TYPE),flit)
+ifndef $(2)_FLIT_GENERATE_SETUP
+define $(2)_FLIT_GENERATE_SETUP
+	(cd $$($$(PKG)_BUILDDIR)/; \
+		$$($$(PKG)_BASE_ENV) $$($$(PKG)_ENV) \
+		$$($(2)_PYTHON_INTERPRETER) -c \
+		"import sys; \
+		sys.modules['requests'] = False; \
+		from flit.sdist import SdistBuilder; \
+		from pathlib import Path; \
+		cwd=Path.cwd(); \
+		setup=cwd.joinpath('setup.py').open('wb'); \
+		pyproject=cwd.joinpath('pyproject.toml'); \
+		builder=SdistBuilder.from_ini_path(pyproject); \
+		setup.write(builder.make_setup_py())")
+endef
+endif
+endif
+
 #
 # Build step. Only define it if not already defined by the package .mk
 # file.
 #
 ifndef $(2)_BUILD_CMDS
 define $(2)_BUILD_CMDS
+	$$($$(PKG)_FLIT_GENERATE_SETUP)
 	(cd $$($$(PKG)_BUILDDIR)/; \
 		$$($$(PKG)_BASE_ENV) $$($$(PKG)_ENV) \
 		$$($(2)_PYTHON_INTERPRETER) setup.py \
