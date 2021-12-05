@@ -112,6 +112,21 @@ else
 NETWORK_MANAGER_CONF_OPTS += --enable-polkit=no
 endif
 
+ifeq ($(BR2_PACKAGE_SYSTEMD),y)
+NETWORK_MANAGER_DEPENDENCIES += systemd
+NETWORK_MANAGER_CONF_OPTS += \
+	--with-systemd-journal=yes \
+	--with-config-logging-backend-default=journal \
+	--with-session-tracking=systemd \
+	--with-suspend-resume=systemd
+else
+NETWORK_MANAGER_CONF_OPTS += \
+	--with-systemd-journal=no \
+	--with-config-logging-backend-default=syslog \
+	--with-session-tracking=no \
+	--with-suspend-resume=upower
+endif
+
 ifeq ($(BR2_PACKAGE_DHCP_CLIENT),y)
 NETWORK_MANAGER_CONF_OPTS += --with-dhclient=/sbin/dhclient
 endif
