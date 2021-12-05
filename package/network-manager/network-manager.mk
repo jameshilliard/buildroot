@@ -42,6 +42,13 @@ else
 NETWORK_MANAGER_CONF_OPTS += --without-ofono
 endif
 
+ifeq ($(BR2_PACKAGE_IWD),y)
+NETWORK_MANAGER_DEPENDENCIES += iwd
+NETWORK_MANAGER_CONF_OPTS += --with-iwd=yes
+else
+NETWORK_MANAGER_CONF_OPTS += --with-iwd=no
+endif
+
 ifeq ($(BR2_PACKAGE_LIBCURL),y)
 NETWORK_MANAGER_DEPENDENCIES += libcurl
 NETWORK_MANAGER_CONF_OPTS += --enable-concheck
