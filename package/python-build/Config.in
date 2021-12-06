@@ -1,0 +1,7 @@
+config BR2_PACKAGE_PYTHON_BUILD
+	bool "python-build"
+	depends on BR2_PACKAGE_PYTHON3
+	help
+	  A simple, correct PEP517 package builder.
+
+          https://github.com/pypa/build

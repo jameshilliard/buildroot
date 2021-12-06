@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYTHON_PEP517
+	bool "python-pep517"
+	depends on BR2_PACKAGE_PYTHON3
+	help
+	  his package contains wrappers around the hooks
+          specified by PEP 517 and PEP 660.
+
+          https://github.com/pypa/pep517
