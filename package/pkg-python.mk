@@ -92,6 +92,23 @@ HOST_PKG_PYTHON_SETUPTOOLS_INSTALL_OPTS = \
 	--root=/ \
 	--single-version-externally-managed
 
+# Target pep517-based packages
+PKG_PYTHON_PEP517_ENV = \
+	_PYTHON_SYSCONFIGDATA_NAME="$(PKG_PYTHON_SYSCONFIGDATA_NAME)" \
+	PATH=$(BR_PATH) \
+	$(TARGET_CONFIGURE_OPTS) \
+	PYTHONPATH="$(if $(BR2_PACKAGE_PYTHON3),$(PYTHON3_PATH),$(PYTHON_PATH))" \
+	PYTHONNOUSERSITE=1 \
+	_python_sysroot=$(STAGING_DIR) \
+	_python_prefix=/usr \
+	_python_exec_prefix=/usr
+
+# Host pep517-based packages
+HOST_PKG_PYTHON_PEP517_ENV = \
+	PATH=$(BR_PATH) \
+	PYTHONNOUSERSITE=1 \
+	$(HOST_CONFIGURE_OPTS)
+
 ################################################################################
 # inner-python-package -- defines how the configuration, compilation
 # and installation of a Python package should be done, implements a
@@ -118,10 +135,13 @@ ifndef $(2)_SETUP_TYPE
  else
   $$(error "$(2)_SETUP_TYPE must be set")
  endif
+ ifdef $(3)_BUILD_TYPE
+  $(2)_BUILD_TYPE = $$($(3)_BUILD_TYPE)
+ endif
 endif
 
-# Distutils/flit
-ifneq ($$(filter distutils flit,$$($(2)_SETUP_TYPE)),)
+# Distutils
+ifeq ($$($(2)_SETUP_TYPE),distutils)
 ifeq ($(4),target)
 $(2)_BASE_ENV         = $$(PKG_PYTHON_DISTUTILS_ENV)
 $(2)_BASE_BUILD_TGT   = build
@@ -148,8 +168,20 @@ $(2)_BASE_BUILD_TGT   = build
 $(2)_BASE_BUILD_OPTS   =
 $(2)_BASE_INSTALL_OPTS = $$(HOST_PKG_PYTHON_SETUPTOOLS_INSTALL_OPTS)
 endif
+# PEP-517 / Wheel
+else ifneq ($$(filter wheel pep517,$$($(2)_SETUP_TYPE)),)
+ifeq ($(4),target)
+$(2)_BASE_ENV         = $$(PKG_PYTHON_PEP517_ENV)
+$(2)_BASE_INSTALL_TARGET_OPTS  = $$(PKG_PYTHON_PEP517_INSTALL_TARGET_OPTS)
+$(2)_BASE_INSTALL_STAGING_OPTS = $$(PKG_PYTHON_PEP517_INSTALL_STAGING_OPTS)
+$(2)_SCHEMES = sysconfig.get_paths()
 else
-$$(error "Invalid $(2)_SETUP_TYPE. Valid options are 'distutils', 'setuptools' or 'flit")
+$(2)_BASE_ENV         = $$(HOST_PKG_PYTHON_PEP517_ENV)
+$(2)_BASE_INSTALL_OPTS = $$(HOST_PKG_PYTHON_PEP517_INSTALL_OPTS)
+$(2)_SCHEMES = {key: os.path.join('$(HOST_DIR)', value.rsplit('/host/')[-1]) for key, value in sysconfig.get_paths().items()}
+endif
+else
+$$(error "Invalid $(2)_SETUP_TYPE. Valid options are 'distutils', 'setuptools', 'pep517' or 'wheel'")
 endif
 
 # Target packages need both the python interpreter on the target (for
@@ -212,9 +244,17 @@ $(2)_DEPENDENCIES += $$(if $$(filter host-python-setuptools,$(1)),,host-python-s
 endif
 endif # SETUP_TYPE
 
-ifeq ($$($(2)_SETUP_TYPE),flit)
-$(2)_DEPENDENCIES += $$(if $$(filter host-python-flit host-python-flit-core,$(1)),,host-python-flit-core)
-endif # SETUP_TYPE
+ifneq ($$(filter wheel pep517,$$($(2)_SETUP_TYPE)),)
+$(2)_DEPENDENCIES += host-python-installer
+ifeq ($$($(2)_SETUP_TYPE),pep517)
+$(2)_DEPENDENCIES += host-python-build
+ifeq ($$($(2)_BUILD_TYPE),setuptools)
+$(2)_DEPENDENCIES += host-python3-$$($(2)_BUILD_TYPE)
+else
+$(2)_DEPENDENCIES += host-python-$$($(2)_BUILD_TYPE)
+endif
+endif
+endif
 
 # Python interpreter to use for building the package.
 #
@@ -240,32 +280,24 @@ $(2)_PYTHON_INTERPRETER = $$(HOST_DIR)/bin/$$($(2)_NEEDS_HOST_PYTHON)
 endif
 endif
 
-ifeq ($$($(2)_SETUP_TYPE),flit)
-ifndef $(2)_FLIT_GENERATE_SETUP
-define $(2)_FLIT_GENERATE_SETUP
-	(cd $$($$(PKG)_BUILDDIR)/; \
-		$$($$(PKG)_BASE_ENV) $$($$(PKG)_ENV) \
-		$$($(2)_PYTHON_INTERPRETER) -c \
-		"import sys; \
-		sys.modules['requests'] = False; \
-		from flit.sdist import SdistBuilder; \
-		from pathlib import Path; \
-		cwd=Path.cwd(); \
-		setup=cwd.joinpath('setup.py').open('wb'); \
-		pyproject=cwd.joinpath('pyproject.toml'); \
-		builder=SdistBuilder.from_ini_path(pyproject); \
-		setup.write(builder.make_setup_py())")
-endef
-endif
-endif
-
 #
 # Build step. Only define it if not already defined by the package .mk
 # file.
 #
 ifndef $(2)_BUILD_CMDS
+ifeq ($$($(2)_SETUP_TYPE),wheel)
+define $(2)_EXTRACT_CMDS
+endef
 define $(2)_BUILD_CMDS
-	$$($$(PKG)_FLIT_GENERATE_SETUP)
+endef
+else ifeq ($$($(2)_SETUP_TYPE),pep517)
+define $(2)_BUILD_CMDS
+	(cd $$($$(PKG)_BUILDDIR)/; \
+		$$($$(PKG)_BASE_ENV) $$($$(PKG)_ENV) \
+		$$($(2)_PYTHON_INTERPRETER) -m build -n)
+endef
+else
+define $(2)_BUILD_CMDS
 	(cd $$($$(PKG)_BUILDDIR)/; \
 		$$($$(PKG)_BASE_ENV) $$($$(PKG)_ENV) \
 		$$($(2)_PYTHON_INTERPRETER) setup.py \
@@ -273,18 +305,40 @@ define $(2)_BUILD_CMDS
 		$$($$(PKG)_BASE_BUILD_OPTS) $$($$(PKG)_BUILD_OPTS))
 endef
 endif
+endif
 
 #
 # Host installation step. Only define it if not already defined by the
 # package .mk file.
 #
 ifndef $(2)_INSTALL_CMDS
+ifneq ($$(filter wheel pep517,$$($(2)_SETUP_TYPE)),)
+ifeq ($$($(2)_SETUP_TYPE),wheel)
+$(2)_WHEEL = $$($(2)_DL_DIR)/$$($(2)_SOURCE)
+else
+$(2)_WHEEL = (ls $$($$(PKG)_BUILDDIR)/dist/*.whl)
+endif
+define $(2)_INSTALL_CMDS
+	(cd $$($$(PKG)_BUILDDIR)/; \
+		$$($$(PKG)_BASE_ENV) $$($$(PKG)_ENV) \
+		$$($(2)_PYTHON_INTERPRETER) -c \
+"import os, sysconfig;\
+from installer import install;\
+from installer.destinations import SchemeDictionaryDestination;\
+from installer.sources import WheelFile;\
+schemes = $$($(2)_SCHEMES);\
+destination = SchemeDictionaryDestination(schemes, interpreter='$$($(2)_PYTHON_INTERPRETER)', script_kind='posix');\
+wheel=WheelFile.open('$$($(2)_WHEEL)');\
+install(source=wheel.__enter__(), destination=destination, additional_metadata={});")
+endef
+else
 define $(2)_INSTALL_CMDS
 	(cd $$($$(PKG)_BUILDDIR)/; \
 		$$($$(PKG)_BASE_ENV) $$($$(PKG)_ENV) \
 		$$($(2)_PYTHON_INTERPRETER) setup.py install \
 		$$($$(PKG)_BASE_INSTALL_OPTS) $$($$(PKG)_INSTALL_OPTS))
 endef
+endif
 endif
 
 #
