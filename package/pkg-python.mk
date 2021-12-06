@@ -92,6 +92,23 @@ HOST_PKG_PYTHON_SETUPTOOLS_INSTALL_OPTS = \
 	--root=/ \
 	--single-version-externally-managed
 
+# Target pep517-based packages
+PKG_PYTHON_PEP517_ENV = \
+	_PYTHON_SYSCONFIGDATA_NAME="$(PKG_PYTHON_SYSCONFIGDATA_NAME)" \
+	PATH=$(BR_PATH) \
+	$(TARGET_CONFIGURE_OPTS) \
+	PYTHONPATH="$(if $(BR2_PACKAGE_PYTHON3),$(PYTHON3_PATH),$(PYTHON_PATH))" \
+	PYTHONNOUSERSITE=1 \
+	_python_sysroot=$(STAGING_DIR) \
+	_python_prefix=/usr \
+	_python_exec_prefix=/usr
+
+# Host pep517-based packages
+HOST_PKG_PYTHON_PEP517_ENV = \
+	PATH=$(BR_PATH) \
+	PYTHONNOUSERSITE=1 \
+	$(HOST_CONFIGURE_OPTS)
+
 ################################################################################
 # inner-python-package -- defines how the configuration, compilation
 # and installation of a Python package should be done, implements a
@@ -140,6 +157,19 @@ else
 $(2)_BASE_ENV         = $$(HOST_PKG_PYTHON_SETUPTOOLS_ENV)
 $(2)_BASE_BUILD_TGT   = build
 $(2)_BASE_INSTALL_OPTS = $$(HOST_PKG_PYTHON_SETUPTOOLS_INSTALL_OPTS)
+endif
+else ifneq ($$(filter flit pep517,$$($(2)_SETUP_TYPE)),)
+ifeq ($(4),target)
+$(2)_BASE_ENV         = $$(PKG_PYTHON_PEP517_ENV)
+$(2)_BASE_BUILD_TGT   = -w
+$(2)_BASE_BUILD_OPTS   =
+$(2)_BASE_INSTALL_TARGET_OPTS  =
+$(2)_BASE_INSTALL_STAGING_OPTS =
+else
+$(2)_BASE_ENV         = $$(HOST_PKG_PYTHON_PEP517_ENV)
+$(2)_BASE_BUILD_TGT   = -w
+$(2)_BASE_BUILD_OPTS   =
+$(2)_BASE_INSTALL_OPTS =
 endif
 else
 $$(error "Invalid $(2)_SETUP_TYPE. Valid options are 'distutils' or 'setuptools'")
@@ -203,6 +233,12 @@ $(2)_DEPENDENCIES += $$(if $$(filter host-python3-setuptools,$(1)),,host-python3
 else
 $(2)_DEPENDENCIES += $$(if $$(filter host-python-setuptools,$(1)),,host-python-setuptools)
 endif
+else ifneq ($$(filter flit pep517,$$($(2)_SETUP_TYPE)),)
+$(2)_DEPENDENCIES += $$(if $$(filter host-python-pypa-build,$(1)),,host-python-pypa-build)
+$(2)_DEPENDENCIES += $$(if $$(filter host-python-installer,$(1)),,host-python-installer)
+ifeq ($$($(2)_SETUP_TYPE),flit)
+$(2)_DEPENDENCIES += $$(if $$(filter host-python-flit-core,$(1)),,host-python-flit-core)
+endif
 endif # SETUP_TYPE
 
 # Python interpreter to use for building the package.
@@ -234,6 +270,15 @@ endif
 # file.
 #
 ifndef $(2)_BUILD_CMDS
+ifneq ($$(filter flit pep517,$$($(2)_SETUP_TYPE)),)
+define $(2)_BUILD_CMDS
+	(cd $$($$(PKG)_BUILDDIR)/; \
+		$$($$(PKG)_BASE_ENV) $$($$(PKG)_ENV) \
+		$$($(2)_PYTHON_INTERPRETER) -m build -n \
+		$$($$(PKG)_BASE_BUILD_TGT) \
+		$$($$(PKG)_BASE_BUILD_OPTS) $$($$(PKG)_BUILD_OPTS))
+endef
+else
 define $(2)_BUILD_CMDS
 	(cd $$($$(PKG)_BUILDDIR)/; \
 		$$($$(PKG)_BASE_ENV) $$($$(PKG)_ENV) \
@@ -242,12 +287,28 @@ define $(2)_BUILD_CMDS
 		$$($$(PKG)_BASE_BUILD_OPTS) $$($$(PKG)_BUILD_OPTS))
 endef
 endif
+endif
 
 #
 # Host installation step. Only define it if not already defined by the
 # package .mk file.
 #
 ifndef $(2)_INSTALL_CMDS
+ifneq ($$(filter flit pep517,$$($(2)_SETUP_TYPE)),)
+define $(2)_INSTALL_CMDS
+	(cd $$($$(PKG)_BUILDDIR)/; \
+		$$($$(PKG)_BASE_ENV) $$($$(PKG)_ENV) \
+		$$($(2)_PYTHON_INTERPRETER) -c \
+			"import os, sys, glob, sysconfig;\
+			from installer import install;\
+			from installer.destinations import SchemeDictionaryDestination;\
+			from installer.sources import WheelFile;\
+			schemes = sysconfig.get_paths();\
+			destination = SchemeDictionaryDestination(schemes, interpreter=sys.executable, script_kind='posix');\
+			wheel=WheelFile.open(glob.glob('dist/*.whl')[0]);\
+			install(source=wheel.__enter__(), destination=destination, additional_metadata={});")
+endef
+else
 define $(2)_INSTALL_CMDS
 	(cd $$($$(PKG)_BUILDDIR)/; \
 		$$($$(PKG)_BASE_ENV) $$($$(PKG)_ENV) \
@@ -255,12 +316,28 @@ define $(2)_INSTALL_CMDS
 		$$($$(PKG)_BASE_INSTALL_OPTS) $$($$(PKG)_INSTALL_OPTS))
 endef
 endif
+endif
 
 #
 # Target installation step. Only define it if not already defined by
 # the package .mk file.
 #
 ifndef $(2)_INSTALL_TARGET_CMDS
+ifneq ($$(filter flit pep517,$$($(2)_SETUP_TYPE)),)
+define $(2)_INSTALL_TARGET_CMDS
+	(cd $$($$(PKG)_BUILDDIR)/; \
+		$$($$(PKG)_BASE_ENV) $$($$(PKG)_ENV) \
+		$$($(2)_PYTHON_INTERPRETER) -c \
+			"import os, sys, glob, sysconfig;\
+			from installer import install;\
+			from installer.destinations import SchemeDictionaryDestination;\
+			from installer.sources import WheelFile;\
+			schemes = sysconfig.get_paths();\
+			destination = SchemeDictionaryDestination(schemes, interpreter=sys.executable, script_kind='posix');\
+			wheel=WheelFile.open(glob.glob('dist/*.whl')[0]);\
+			install(source=wheel.__enter__(), destination=destination, additional_metadata={});")
+endef
+else
 define $(2)_INSTALL_TARGET_CMDS
 	(cd $$($$(PKG)_BUILDDIR)/; \
 		$$($$(PKG)_BASE_ENV) $$($$(PKG)_ENV) \
@@ -268,6 +345,7 @@ define $(2)_INSTALL_TARGET_CMDS
 		$$($$(PKG)_BASE_INSTALL_TARGET_OPTS) \
 		$$($$(PKG)_INSTALL_TARGET_OPTS))
 endef
+endif
 endif
 
 #
