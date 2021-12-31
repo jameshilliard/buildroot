@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-QT5BASE_VERSION = $(QT5_VERSION)
-QT5BASE_SITE = $(QT5_SITE)
-QT5BASE_SOURCE = qtbase-$(QT5_SOURCE_TARBALL_PREFIX)-$(QT5BASE_VERSION).tar.xz
+QT5BASE_VERSION = 98aa64af7e1e677bd107bfb0c432cabf7c3a5e32
+QT5BASE_SITE = $(QT5_SITE_BASE)/qtbase/-/archive/$(QT5BASE_VERSION)
+QT5BASE_SOURCE = qtbase-$(QT5BASE_VERSION).tar.bz2
 
 QT5BASE_DEPENDENCIES = host-pkgconf pcre2 zlib
 QT5BASE_INSTALL_STAGING = YES
