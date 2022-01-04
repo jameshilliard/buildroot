@@ -32,6 +32,7 @@ config BR2_PACKAGE_QT5WEBENGINE
 	depends on BR2_PACKAGE_QT5_GL_AVAILABLE # qt5declarative, qt5base-eglfs
 	depends on BR2_PACKAGE_HAS_LIBEGL # qt5base-eglfs
 	depends on BR2_PACKAGE_HAS_UDEV
+	select BR2_PACKAGE_HOST_NODEJS
 	# v8 (a chromium 3rd-party) compiles its internal host-tools with the
 	# same word size as the target. For 32-bits targets, it adds the -m32
 	# flag (for 64-bits, it adds the -m64 flag).
