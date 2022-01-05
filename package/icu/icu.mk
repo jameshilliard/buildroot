@@ -26,7 +26,8 @@ ICU_CONFIG_SCRIPTS = icu-config
 ICU_CONF_OPTS = \
 	--with-cross-build=$(HOST_ICU_DIR)/source \
 	--disable-samples \
-	--disable-tests
+	--disable-tests \
+	--disable-renaming
 
 # When available, icu prefers to use C++11 atomics, which rely on the
 # __atomic builtins. On certain architectures, this requires linking

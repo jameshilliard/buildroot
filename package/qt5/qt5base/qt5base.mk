@@ -43,6 +43,13 @@ QT5BASE_CONFIGURE_OPTS += -no-optimize-debug
 QT5BASE_CFLAGS = $(TARGET_CFLAGS)
 QT5BASE_CXXFLAGS = $(TARGET_CXXFLAGS)
 
+ifeq ($(BR2_CCACHE),y)
+QT5BASE_CONFIGURE_OPTS += -ccache
+endif
+
+QT5BASE_CFLAGS += -DU_DISABLE_RENAMING=1
+QT5BASE_CXXFLAGS += -DU_DISABLE_RENAMING=1
+
 ifeq ($(BR2_TOOLCHAIN_HAS_GCC_BUG_90620),y)
 QT5BASE_CFLAGS += -O0
 QT5BASE_CXXFLAGS += -O0
@@ -235,6 +242,26 @@ QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_QT5BASE_ICU),icu)
 
 QT5BASE_CONFIGURE_OPTS += $(if $(BR2_PACKAGE_QT5BASE_EXAMPLES),-make,-nomake) examples
 
+# Used by qt5webengine
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_FFMPEG),ffmpeg)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_LCMS2),lcms2)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_LIBEVENT),libevent)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_LIBNSS),libnss)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_LIBXML2),libxml2)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_LIBXSLT),libxslt)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_MINIZIP),minizip)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_LIBVPX),libvpx)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_RE2),re2)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_SNAPPY),snappy)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_WEBP),webp)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_XLIB_LIBXCOMPOSITE),xlib_libXcomposite)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_XLIB_LIBXCURSOR),xlib_libXcursor)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_XLIB_LIBXI),xlib_libXi)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_XLIB_LIBXI),xlib_libxkbfile)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_XLIB_LIBXRANDR),xlib_libXrandr)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_XLIB_LIBXSCRNSAVER),xlib_libXScrnSaver)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_XLIB_LIBXTST),xlib_libXtst)
+
 ifeq ($(BR2_PACKAGE_LIBINPUT),y)
 QT5BASE_CONFIGURE_OPTS += -libinput
 QT5BASE_DEPENDENCIES += libinput
@@ -288,12 +315,6 @@ define QT5BASE_CONFIGURE_ARCH_CONFIG
 endef
 endif
 
-# This allows to use ccache when available
-define QT5BASE_CONFIGURE_HOSTCC
-	$(SED) 's,^QMAKE_CC\s*=.*,QMAKE_CC = $(HOSTCC),' $(@D)/mkspecs/common/g++-base.conf
-	$(SED) 's,^QMAKE_CXX\s*=.*,QMAKE_CXX = $(HOSTCXX),' $(@D)/mkspecs/common/g++-base.conf
-endef
-
 # Must be last so can override all options set by Buildroot
 QT5BASE_CONFIGURE_OPTS += $(call qstrip,$(BR2_PACKAGE_QT5BASE_CUSTOM_CONF_OPTS))
 
@@ -316,12 +337,15 @@ define QT5BASE_CONFIGURE_CMDS
 		-v \
 		-prefix /usr \
 		-hostprefix $(HOST_DIR) \
+		-hostdatadir $(STAGING_DIR) \
 		-headerdir /usr/include/qt5 \
 		-sysroot $(STAGING_DIR) \
+		-no-gcc-sysroot \
 		-plugindir /usr/lib/qt/plugins \
 		-examplesdir /usr/lib/qt/examples \
 		-no-rpath \
 		-nomake tests \
+		-pkg-config \
 		-device buildroot \
 		-device-option CROSS_COMPILE="$(TARGET_CROSS)" \
 		-device-option BR_COMPILER_CFLAGS="$(QT5BASE_CFLAGS)" \
@@ -330,6 +354,6 @@ define QT5BASE_CONFIGURE_CMDS
 	)
 endef
 
-QT5BASE_POST_INSTALL_STAGING_HOOKS += QT5_INSTALL_QT_CONF
+QT5BASE_PRE_INSTALL_STAGING_HOOKS += QT5_INSTALL_QT_CONF
 
 $(eval $(qmake-package))

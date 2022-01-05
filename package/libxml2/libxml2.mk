@@ -12,10 +12,14 @@ LIBXML2_LICENSE_FILES = COPYING
 LIBXML2_CPE_ID_VENDOR = xmlsoft
 LIBXML2_CONFIG_SCRIPTS = xml2-config
 
+LIBXML2_CFLAGS = $(TARGET_CFLAGS)
+
 # relocation truncated to fit: R_68K_GOT16O
 ifeq ($(BR2_m68k_cf),y)
-LIBXML2_CONF_ENV += CFLAGS="$(TARGET_CFLAGS) -mxgot"
+LIBXML2_CFLAGS += -mxgot
 endif
+
+LIBXML2_CONF_ENV += CFLAGS="$(LIBXML2_CFLAGS)"
 
 LIBXML2_CONF_OPTS = --with-gnu-ld --without-python --without-debug
 
@@ -27,6 +31,7 @@ HOST_LIBXML2_CONF_OPTS = --without-zlib --without-lzma --without-python
 ifeq ($(BR2_PACKAGE_ICU),y)
 LIBXML2_DEPENDENCIES += icu
 LIBXML2_CONF_OPTS += --with-icu
+LIBXML2_CFLAGS += -DU_DISABLE_RENAMING=1
 else
 LIBXML2_CONF_OPTS += --without-icu
 endif
