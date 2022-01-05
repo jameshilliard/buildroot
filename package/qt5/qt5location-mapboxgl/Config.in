@@ -1,0 +1,4 @@
+# Not user-selectable, it is only needed to be copied
+# into the qt5location source tree.
+config BR2_PACKAGE_QT5LOCATION_MAPBOXGL
+	bool
