@@ -4,12 +4,13 @@
 #
 ################################################################################
 
-QT5BASE_VERSION = $(QT5_VERSION)
-QT5BASE_SITE = $(QT5_SITE)
-QT5BASE_SOURCE = qtbase-$(QT5_SOURCE_TARBALL_PREFIX)-$(QT5BASE_VERSION).tar.xz
+QT5BASE_VERSION = 6e9cf7f32ceffd62d230d482d8d0d4a5b2c9303a
+QT5BASE_SITE = $(QT5_SITE)/qtbase/-/archive/$(QT5BASE_VERSION)
+QT5BASE_SOURCE = qtbase-$(QT5BASE_VERSION).tar.bz2
 
 QT5BASE_DEPENDENCIES = host-pkgconf pcre2 zlib
 QT5BASE_INSTALL_STAGING = YES
+QT5BASE_SYNC_QT_HEADERS = YES
 
 # A few comments:
 #  * -no-pch to workaround the issue described at

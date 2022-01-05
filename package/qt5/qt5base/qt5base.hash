@@ -1,5 +1,5 @@
-# Hash from: https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtbase-everywhere-src-5.15.2.tar.xz.sha256
-sha256  909fad2591ee367993a75d7e2ea50ad4db332f05e1c38dd7a5a274e156a4e0f8  qtbase-everywhere-src-5.15.2.tar.xz
+# Locally calculated
+sha256  b23754a97af171a6b0b0a21eda3fcc47ad4ac96db172010a7453afc41b6b227d  qtbase-6e9cf7f32ceffd62d230d482d8d0d4a5b2c9303a.tar.bz2
 
 # Hashes for license files:
 sha256  8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643  LICENSE.GPL2
