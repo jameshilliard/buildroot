@@ -1,5 +1,5 @@
-# Hash from: https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtdeclarative-everywhere-src-5.15.2.tar.xz.sha256
-sha256  c600d09716940f75d684f61c5bdaced797f623a86db1627da599027f6c635651  qtdeclarative-everywhere-src-5.15.2.tar.xz
+# Locally calculated
+sha256  ff460197ea96d2313d1da92587d82ff5d90e9d56ac8249d83f4a01ea847bdfb3  qtdeclarative-8aa1164f1bb6a5dfb5527bcfbf128ab6f2c73ed4.tar.bz2
 
 # Hashes for license files:
 sha256  8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643  LICENSE.GPL2

@@ -1,5 +1,5 @@
-# Hash from: https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtquickcontrols2-everywhere-src-5.15.2.tar.xz.sha256
-sha256  671b6ce5f4b8ecc94db622d5d5fb29ef4ff92819be08e5ea55bfcab579de8919  qtquickcontrols2-everywhere-src-5.15.2.tar.xz
+# Locally calculated
+sha256  d786f7ca3e825eb754d9eff0eb33dee2848e7d447426178625a9bd3fb547bf17  qtquickcontrols2-be66bf9a5618c745d2a6ee2262967af6307b3b07.tar.bz2
 
 # Hashes for license files:
 sha256  d2cfc059acb4abd8e513cd0a73cd8489f34cbafa7bc34d5d31fb3210821cf8ca  LICENSE.GPLv3

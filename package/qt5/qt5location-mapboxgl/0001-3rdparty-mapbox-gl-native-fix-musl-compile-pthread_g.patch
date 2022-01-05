@@ -24,13 +24,13 @@ Signed-off-by: Peter Seiderer <ps.report@gmx.net>
 [yann.morin.1998@free.fr: add uClibc]
 Signed-off-by: Yann E. MORIN <yann.morin.1998@free.fr>
 ---
- src/3rdparty/mapbox-gl-native/platform/default/thread.cpp | 3 ++-
+ platform/default/thread.cpp | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/src/3rdparty/mapbox-gl-native/platform/default/thread.cpp b/src/3rdparty/mapbox-gl-native/platform/default/thread.cpp
+diff --git a/platform/default/thread.cpp b/platform/default/thread.cpp
 index c7c79b4..3f135eb 100644
---- a/src/3rdparty/mapbox-gl-native/platform/default/thread.cpp
-+++ b/src/3rdparty/mapbox-gl-native/platform/default/thread.cpp
+--- a/platform/default/thread.cpp
++++ b/platform/default/thread.cpp
 @@ -11,8 +11,9 @@ namespace platform {
  
  std::string getCurrentThreadName() {
