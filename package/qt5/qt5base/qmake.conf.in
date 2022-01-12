@@ -8,6 +8,10 @@
 
 include(../common/linux_device_pre.conf)
 
+# set up pkg-config
+QMAKE_PKG_CONFIG        = $$[QT_HOST_PREFIX]/bin/pkg-config
+QMAKE_PKGCONFIG_PREFIX  = /usr
+
 # modifications to g++-unix.conf
 QMAKE_CC                = $${CROSS_COMPILE}gcc
 QMAKE_CXX               = $${CROSS_COMPILE}g++

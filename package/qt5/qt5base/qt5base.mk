@@ -230,6 +230,22 @@ QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_QT5BASE_ICU),icu)
 
 QT5BASE_CONFIGURE_OPTS += $(if $(BR2_PACKAGE_QT5BASE_EXAMPLES),-make,-nomake) examples
 
+# Used by qt5webengine
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_FFMPEG),ffmpeg)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_LIBEVENT),libevent)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_LIBNSS),libnss)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_LIBXML2),libxml2)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_LIBXSLT),libxslt)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_MINIZIP),minizip)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_LIBVPX),libvpx)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_WEBP),webp)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_XLIB_LIBXCOMPOSITE),xlib_libXcomposite)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_XLIB_LIBXCURSOR),xlib_libXcursor)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_XLIB_LIBXI),xlib_libXi)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_XLIB_LIBXRANDR),xlib_libXrandr)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_XLIB_LIBXSCRNSAVER),xlib_libXScrnSaver)
+QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_XLIB_LIBXTST),xlib_libXtst)
+
 ifeq ($(BR2_PACKAGE_LIBINPUT),y)
 QT5BASE_CONFIGURE_OPTS += -libinput
 QT5BASE_DEPENDENCIES += libinput
@@ -311,12 +327,15 @@ define QT5BASE_CONFIGURE_CMDS
 		-v \
 		-prefix /usr \
 		-hostprefix $(HOST_DIR) \
+		-hostdatadir $(STAGING_DIR) \
 		-headerdir /usr/include/qt5 \
 		-sysroot $(STAGING_DIR) \
+		-no-gcc-sysroot \
 		-plugindir /usr/lib/qt/plugins \
 		-examplesdir /usr/lib/qt/examples \
 		-no-rpath \
 		-nomake tests \
+		-pkg-config \
 		-device buildroot \
 		-device-option CROSS_COMPILE="$(TARGET_CROSS)" \
 		-device-option BR_COMPILER_CFLAGS="$(QT5BASE_CFLAGS)" \
