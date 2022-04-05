@@ -146,14 +146,6 @@ HOST_PKG_PYTHON_PEP517_ENV = \
 	PYTHONNOUSERSITE=1 \
 	$(HOST_CONFIGURE_OPTS)
 
-HOST_PKG_PYTHON_PEP517_INSTALL_OPTS = \
-	--interpreter=/bin/python \
-	--script-kind=posix \
-	--purelib=$(HOST_DIR)/lib/python$(PYTHON3_VERSION_MAJOR)/site-packages \
-	--headers=$(HOST_DIR)/include/python$(PYTHON3_VERSION_MAJOR) \
-	--scripts=$(HOST_DIR)/bin \
-	--data=$(HOST_DIR)
-
 HOST_PKG_PYTHON_PEP517_BOOTSTRAP_INSTALL_OPTS = \
 	--installdir=$(HOST_DIR)/lib/python$(PYTHON3_VERSION_MAJOR)/site-packages
 
@@ -225,11 +217,11 @@ ifeq ($(1),host-python-flit-core)
 #
 $(2)_BASE_INSTALL_CMD = -m bootstrap_install dist/* $$(HOST_PKG_PYTHON_PEP517_BOOTSTRAP_INSTALL_OPTS)
 else
-$(2)_BASE_INSTALL_CMD = $(TOPDIR)/support/scripts/pyinstaller.py dist/* $$(HOST_PKG_PYTHON_PEP517_INSTALL_OPTS)
+$(2)_BASE_INSTALL_CMD = -m installer dist/*
 endif
 else
 $(2)_BASE_BUILD_CMD = -m build -n -w
-$(2)_BASE_INSTALL_CMD = $(TOPDIR)/support/scripts/pyinstaller.py dist/* $$(HOST_PKG_PYTHON_PEP517_INSTALL_OPTS)
+$(2)_BASE_INSTALL_CMD = -m installer dist/*
 endif
 endif
 else
