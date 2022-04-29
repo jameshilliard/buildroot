@@ -243,8 +243,9 @@ ifeq ($$($(2)_SETUP_TYPE),flit)
 $(2)_DEPENDENCIES += host-python-flit-core
 endif
 else ifeq ($$($(2)_SETUP_TYPE),flit-bootstrap)
+$(2)_DEPENDENCIES += $$(if $$(filter host-python-flit-core,$(1)),,host-python-flit-core)
 ifeq ($$(filter host-python-flit-core host-python-installer,$(1)),)
-$(2)_DEPENDENCIES += host-python-flit-core host-python-installer
+$(2)_DEPENDENCIES += host-python-installer
 endif
 endif # SETUP_TYPE
 
