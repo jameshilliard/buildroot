@@ -125,8 +125,8 @@ will therefore only use a few of them.
   +c_link_args+, +cpp_args+, +cpp_link_args+, +sys_root+, and
   +pkg_config_libdir+.
 
-* +FOO_NINJA_ENV+, to specify additional environment variables to pass to
-  +ninja+, meson companion tool in charge of the build operations. By default,
+* +FOO_MESON_ENV+, to specify additional environment variables to pass to
+  +meson+, meson tool in charge of the build/install operations. By default,
   empty.
 
 * +FOO_NINJA_OPTS+, to specify a space-separated list of targets to build. By

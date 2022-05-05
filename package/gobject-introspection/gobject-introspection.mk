@@ -30,14 +30,14 @@ HOST_GOBJECT_INTROSPECTION_DEPENDENCIES = \
 	host-python3
 
 # g-ir-scanner will default to /usr/bin/ld for linking if this is not set.
-GOBJECT_INTROSPECTION_NINJA_ENV += \
+GOBJECT_INTROSPECTION_MESON_ENV += \
 	CC="$(TARGET_CC)"
 
 # When building, gobject-introspection uses tools/g-ir-scanner to build several
 # .gir and .typelib files. g-ir-scanner does not use LDFLAGS, and by default,
 # links to the system-installed libglib2 path. To remedy this issue, defining
 # LD_LIBRARY_PATH forces g-ir-scanner to use our host installed libglib2 files.
-HOST_GOBJECT_INTROSPECTION_NINJA_ENV += \
+HOST_GOBJECT_INTROSPECTION_MESON_ENV += \
 	LD_LIBRARY_PATH="$(if $(LD_LIBRARY_PATH),$(LD_LIBRARY_PATH):)$(HOST_DIR)/lib"
 
 # Use the host gi-scanner to prevent the scanner from generating incorrect

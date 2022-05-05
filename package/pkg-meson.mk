@@ -21,13 +21,13 @@
 ################################################################################
 
 #
-# Pass PYTHONNOUSERSITE environment variable when invoking Meson or Ninja, so
+# Pass PYTHONNOUSERSITE environment variable when invoking Meson, so
 # $(HOST_DIR)/bin/python3 will not look for Meson modules in
 # $HOME/.local/lib/python3.x/site-packages
 #
-MESON		= PYTHONNOUSERSITE=y $(HOST_DIR)/bin/meson
-NINJA		= PYTHONNOUSERSITE=y $(HOST_DIR)/bin/ninja
-NINJA_OPTS	= $(if $(VERBOSE),-v)
+MESON              = PYTHONNOUSERSITE=y $(HOST_DIR)/bin/meson
+MESON_BUILD_OPTS   = $(if $(VERBOSE),-v)
+MESON_INSTALL_OPTS = --no-rebuild
 
 # https://mesonbuild.com/Reference-tables.html#cpu-families
 ifeq ($(BR2_arcle)$(BR2_arceb),y)
@@ -138,6 +138,7 @@ define $(2)_CONFIGURE_CMDS
 	$$(MESON) \
 		--prefix=/usr \
 		--libdir=lib \
+		--pkgconfig.relocatable \
 		--default-library=$(if $(BR2_STATIC_LIBS),static,shared) \
 		--buildtype=$(if $(BR2_ENABLE_RUNTIME_DEBUG),debug,release) \
 		--cross-file=$$($$(PKG)_SRCDIR)/build/cross-compilation.conf \
@@ -158,6 +159,7 @@ define $(2)_CONFIGURE_CMDS
 	$$($$(PKG)_CONF_ENV) $$(MESON) \
 		--prefix=$$(HOST_DIR) \
 		--libdir=lib \
+		--pkgconfig.relocatable \
 		--sysconfdir=$$(HOST_DIR)/etc \
 		--localstatedir=$$(HOST_DIR)/var \
 		--default-library=shared \
@@ -179,13 +181,23 @@ $(2)_DEPENDENCIES += host-meson
 ifndef $(2)_BUILD_CMDS
 ifeq ($(4),target)
 define $(2)_BUILD_CMDS
-	$$(TARGET_MAKE_ENV) $$($$(PKG)_NINJA_ENV) \
-		$$(NINJA) $$(NINJA_OPTS) $$($$(PKG)_NINJA_OPTS) -C $$($$(PKG)_SRCDIR)/build
+	$$(TARGET_MAKE_ENV) \
+	$$($$(PKG)_MESON_ENV) \
+	$$(MESON) \
+		compile \
+		$$(MESON_BUILD_OPTS) \
+		$$(if $$($$(PKG)_NINJA_OPTS),--ninja-args $$($$(PKG)_NINJA_OPTS)) \
+		-C $$($$(PKG)_SRCDIR)/build
 endef
 else
 define $(2)_BUILD_CMDS
-	$$(HOST_MAKE_ENV) $$($$(PKG)_NINJA_ENV) \
-		$$(NINJA) $$(NINJA_OPTS) $$($$(PKG)_NINJA_OPTS) -C $$($$(PKG)_SRCDIR)/build
+	$$(HOST_MAKE_ENV) \
+	$$($$(PKG)_MESON_ENV) \
+	$$(MESON) \
+		compile \
+		$$(MESON_BUILD_OPTS) \
+		$$(if $$($$(PKG)_NINJA_OPTS),--ninja-args $$($$(PKG)_NINJA_OPTS)) \
+		-C $$($$(PKG)_SRCDIR)/build
 endef
 endif
 endif
@@ -196,8 +208,13 @@ endif
 #
 ifndef $(2)_INSTALL_CMDS
 define $(2)_INSTALL_CMDS
-	$$(HOST_MAKE_ENV) $$($$(PKG)_NINJA_ENV) \
-		$$(NINJA) $$(NINJA_OPTS) -C $$($$(PKG)_SRCDIR)/build install
+	$$(HOST_MAKE_ENV) \
+	$$($$(PKG)_MESON_ENV) \
+	$$(MESON) \
+		install \
+		$$(MESON_INSTALL_OPTS) \
+		--destdir $$(HOST_DIR) \
+		-C $$($$(PKG)_SRCDIR)/build
 endef
 endif
 
@@ -207,8 +224,13 @@ endif
 #
 ifndef $(2)_INSTALL_STAGING_CMDS
 define $(2)_INSTALL_STAGING_CMDS
-	$$(TARGET_MAKE_ENV) $$($$(PKG)_NINJA_ENV) DESTDIR=$$(STAGING_DIR) \
-		$$(NINJA) $$(NINJA_OPTS) -C $$($$(PKG)_SRCDIR)/build install
+	$$(TARGET_MAKE_ENV) \
+	$$($$(PKG)_MESON_ENV) \
+	$$(MESON) \
+		install \
+		$$(MESON_INSTALL_OPTS) \
+		--destdir $$(STAGING_DIR) \
+		-C $$($$(PKG)_SRCDIR)/build
 endef
 endif
 
@@ -218,8 +240,13 @@ endif
 #
 ifndef $(2)_INSTALL_TARGET_CMDS
 define $(2)_INSTALL_TARGET_CMDS
-	$$(TARGET_MAKE_ENV) $$($$(PKG)_NINJA_ENV) DESTDIR=$$(TARGET_DIR) \
-		$$(NINJA) $$(NINJA_OPTS) -C $$($$(PKG)_SRCDIR)/build install
+	$$(TARGET_MAKE_ENV) \
+	$$($$(PKG)_MESON_ENV) \
+	$$(MESON) \
+		install \
+		$$(MESON_INSTALL_OPTS) \
+		--destdir $$(TARGET_DIR) \
+		-C $$($$(PKG)_SRCDIR)/build
 endef
 endif
 

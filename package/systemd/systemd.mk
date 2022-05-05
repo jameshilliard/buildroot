@@ -746,7 +746,7 @@ endef
 SYSTEMD_ROOTFS_PRE_CMD_HOOKS += SYSTEMD_PRESET_ALL
 
 SYSTEMD_CONF_ENV = $(HOST_UTF8_LOCALE_ENV)
-SYSTEMD_NINJA_ENV = $(HOST_UTF8_LOCALE_ENV)
+SYSTEMD_MESON_ENV = $(HOST_UTF8_LOCALE_ENV)
 
 define SYSTEMD_LINUX_CONFIG_FIXUPS
 	$(call KCONFIG_ENABLE_OPT,CONFIG_DEVTMPFS)
@@ -848,8 +848,6 @@ HOST_SYSTEMD_DEPENDENCIES = \
 	host-libcap \
 	host-gperf \
 	host-python-jinja2
-
-HOST_SYSTEMD_NINJA_ENV = DESTDIR=$(HOST_DIR)
 
 # Fix RPATH After installation
 # * systemd provides a install_rpath instruction to meson because the binaries
