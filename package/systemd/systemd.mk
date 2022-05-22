@@ -19,7 +19,7 @@
 # - Diff sysusers.d with the previous version
 # - Diff factory/etc/nsswitch.conf with the previous version
 #   (details are often sprinkled around in README and manpages)
-SYSTEMD_VERSION = 250.4
+SYSTEMD_VERSION = 251
 SYSTEMD_SITE = $(call github,systemd,systemd-stable,v$(SYSTEMD_VERSION))
 SYSTEMD_LICENSE = \
 	LGPL-2.1+, \
@@ -70,6 +70,8 @@ SYSTEMD_CONF_OPTS += \
 	-Dlink-boot-shared=true \
 	-Dloadkeys-path=/usr/bin/loadkeys \
 	-Dman=false \
+	-Ddbus-interfaces-dir=no \
+	-Ddbus=false \
 	-Dmount-path=/usr/bin/mount \
 	-Dmode=release \
 	-Dnss-systemd=true \
@@ -80,6 +82,7 @@ SYSTEMD_CONF_OPTS += \
 	-Dsplit-bin=true \
 	-Dsplit-usr=false \
 	-Dsulogin-path=/usr/sbin/sulogin \
+	-Ddefault-user-shell=/bin/sh \
 	-Dsystem-gid-max=999 \
 	-Dsystem-uid-max=999 \
 	-Dsysvinit-path= \
@@ -232,9 +235,9 @@ endif
 
 ifeq ($(BR2_PACKAGE_LIBGCRYPT),y)
 SYSTEMD_DEPENDENCIES += libgcrypt
-SYSTEMD_CONF_OPTS += -Ddefault-dnssec=allow-downgrade -Dgcrypt=true
+SYSTEMD_CONF_OPTS += -Dgcrypt=true
 else
-SYSTEMD_CONF_OPTS += -Ddefault-dnssec=no -Dgcrypt=false
+SYSTEMD_CONF_OPTS += -Dgcrypt=false
 endif
 
 ifeq ($(BR2_PACKAGE_P11_KIT),y)
@@ -431,6 +434,13 @@ else
 SYSTEMD_CONF_OPTS += -Duserdb=false
 endif
 
+ifeq ($(BR2_PACKAGE_SYSTEMD_SYSUPDATE),y)
+SYSTEMD_CONF_OPTS += -Dsysupdate=true
+SYSTEMD_DEPENDENCIES += openssl
+else
+SYSTEMD_CONF_OPTS += -Dsysupdate=false
+endif
+
 ifeq ($(BR2_PACKAGE_SYSTEMD_COREDUMP),y)
 SYSTEMD_CONF_OPTS += -Dcoredump=true
 SYSTEMD_COREDUMP_USER = systemd-coredump -1 systemd-coredump -1 * - - - systemd core dump processing
@@ -498,6 +508,12 @@ else
 SYSTEMD_CONF_OPTS += -Dnss-resolve=false -Dresolve=false
 endif
 
+ifneq ($(BR2_PACKAGE_LIBGCRYPT)$(BR2_PACKAGE_LIBOPENSSL),)
+SYSTEMD_CONF_OPTS += -Ddefault-dnssec=allow-downgrade
+else
+SYSTEMD_CONF_OPTS += -Ddefault-dnssec=no
+endif
+
 ifeq ($(BR2_PACKAGE_LIBOPENSSL),y)
 SYSTEMD_CONF_OPTS += \
 	-Dgnutls=false \
@@ -546,7 +562,6 @@ SYSTEMD_DEPENDENCIES += gnu-efi
 SYSTEMD_CONF_OPTS += \
 	-Defi=true \
 	-Dgnu-efi=true \
-	-Defi-cc=$(TARGET_CC) \
 	-Defi-ld=bfd \
 	-Defi-libdir=$(STAGING_DIR)/usr/lib \
 	-Defi-includedir=$(STAGING_DIR)/usr/include/efi
@@ -789,6 +804,7 @@ HOST_SYSTEMD_CONF_OPTS = \
 	-Dbinfmt=false \
 	-Drepart=false \
 	-Dcoredump=false \
+	-Dsysupdate=false \
 	-Dpstore=false \
 	-Doomd=false \
 	-Dlogind=false \
@@ -820,6 +836,7 @@ HOST_SYSTEMD_CONF_OPTS = \
 	-Drfkill=false \
 	-Dman=false \
 	-Dhtml=false \
+	-Ddbus-interfaces-dir=no \
 	-Dsmack=false \
 	-Dpolkit=false \
 	-Dblkid=false \
@@ -831,6 +848,7 @@ HOST_SYSTEMD_CONF_OPTS = \
 	-Dima=false \
 	-Dtests=false \
 	-Dglib=false \
+	-Ddbus=false \
 	-Dacl=false \
 	-Dsysvinit-path='' \
 	-Dinitrd=false \
