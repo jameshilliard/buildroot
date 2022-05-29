@@ -26,5 +26,11 @@ endif
 ifeq ($(BR2_RISCV_ISA_RVC),y)
 GCC_TARGET_ARCH := $(GCC_TARGET_ARCH)c
 endif
+ifeq ($(BR2_RISCV_ISA_RVZicsr),y)
+GCC_TARGET_ARCH := $(GCC_TARGET_ARCH)_zicsr
+endif
+ifeq ($(BR2_RISCV_ISA_RVZifencei),y)
+GCC_TARGET_ARCH := $(GCC_TARGET_ARCH)_zifencei
+endif
 
 endif
