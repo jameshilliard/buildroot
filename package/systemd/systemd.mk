@@ -284,6 +284,13 @@ else
 SYSTEMD_CONF_OPTS += -Danalyze=false
 endif
 
+ifeq ($(BR2_PACKAGE_LIBBPF),y)
+SYSTEMD_DEPENDENCIES += host-bpftool libbpf
+SYSTEMD_CONF_OPTS += -Dbpf-framework=true -Dbpf-compiler=gcc
+else
+SYSTEMD_CONF_OPTS += -Dbpf-framework=false
+endif
+
 ifeq ($(BR2_PACKAGE_SYSTEMD_JOURNAL_REMOTE),y)
 # remote also depends on libcurl, this is already added above.
 SYSTEMD_DEPENDENCIES += libmicrohttpd

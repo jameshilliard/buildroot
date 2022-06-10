@@ -30,7 +30,7 @@ endif
 
 define LIBBPF_INSTALL_STAGING_CMDS
 	$(TARGET_MAKE_ENV) $(TARGET_CONFIGURE_OPTS) $(MAKE) \
-		-C $(@D)/src install $(LIBBPF_UPDATE_UAPI_HEADERS) \
+		-C $(@D)/src install install_uapi_headers \
 		DESTDIR=$(STAGING_DIR)
 endef
 
