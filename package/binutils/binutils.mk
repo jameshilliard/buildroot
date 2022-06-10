@@ -66,7 +66,9 @@ BINUTILS_MAKE_OPTS += MAKEINFO=true
 BINUTILS_INSTALL_TARGET_OPTS = DESTDIR=$(TARGET_DIR) MAKEINFO=true install
 HOST_BINUTILS_CONF_ENV += MAKEINFO=true
 HOST_BINUTILS_MAKE_OPTS += MAKEINFO=true
+HOST_BINUTILS_BFP_GAS_MAKE_OPTS += MAKEINFO=true
 HOST_BINUTILS_INSTALL_OPTS += MAKEINFO=true install
+HOST_BINUTILS_BFP_GAS_INSTALL_OPTS += MAKEINFO=true install
 
 # Workaround a build issue with -Os for ARM Cortex-M cpus.
 # (Binutils 2.25.1 and 2.26.1)
@@ -77,21 +79,86 @@ endif
 
 # "host" binutils should actually be "cross"
 # We just keep the convention of "host utility" for now
-HOST_BINUTILS_CONF_OPTS = \
+HOST_BINUTILS_COMMON_CONF_OPTS = \
+	--prefix="$(HOST_DIR)" \
+	--sysconfdir="$(HOST_DIR)/etc" \
+	--localstatedir="$(HOST_DIR)/var" \
 	--disable-multilib \
 	--disable-werror \
-	--target=$(GNU_TARGET_NAME) \
 	--disable-shared \
 	--enable-static \
-	--with-sysroot=$(STAGING_DIR) \
-	--enable-poison-system-directories \
+	--disable-gtk-doc \
+	--disable-gtk-doc-html \
+	--disable-doc \
+	--disable-docs \
+	--disable-documentation \
+	--disable-debug \
+	--with-xmlto=no \
+	--with-fop=no \
+	--disable-nls \
 	--without-debuginfod \
+	--enable-poison-system-directories \
 	$(BINUTILS_DISABLE_GDB_CONF_OPTS) \
 	$(BINUTILS_EXTRA_CONFIG_OPTIONS)
+
+HOST_BINUTILS_CONF_OPTS = \
+	$(HOST_BINUTILS_COMMON_CONF_OPTS) \
+	--target=$(GNU_TARGET_NAME) \
+	--with-sysroot=$(STAGING_DIR)
+	#--enable-targets=$(GNU_TARGET_NAME),$(BPF_TARGET_NAME)
+
+HOST_BINUTILS_BPF_GAS_CONF_OPTS = \
+	$(HOST_BINUTILS_COMMON_CONF_OPTS) \
+	--target=$(BPF_TARGET_NAME)
 
 # binutils run configure script of subdirs at make time, so ensure
 # our TARGET_CONFIGURE_ARGS are taken into consideration for those
 BINUTILS_MAKE_ENV = $(TARGET_CONFIGURE_ARGS)
+
+HOST_BINUTILS_TARGET_BUILDDIR = builddir
+HOST_BINUTILS_BPF_GAS_BUILDDIR = builddir-bpf
+
+define HOST_BINUTILS_TARGET_CONFIGURE_SYMLINK
+	mkdir -p $(@D)/$(HOST_BINUTILS_TARGET_BUILDDIR)
+	ln -sf ../configure $(@D)/$(HOST_BINUTILS_TARGET_BUILDDIR)/configure
+endef
+
+define HOST_BINUTILS_BPF_GAS_CONFIGURE_SYMLINK
+	mkdir -p $(@D)/$(HOST_BINUTILS_BPF_GAS_BUILDDIR)
+	ln -sf ../configure $(@D)/$(HOST_BINUTILS_BPF_GAS_BUILDDIR)/configure
+endef
+
+HOST_BINUTILS_PRE_CONFIGURE_HOOKS += HOST_BINUTILS_TARGET_CONFIGURE_SYMLINK
+HOST_BINUTILS_PRE_CONFIGURE_HOOKS += HOST_BINUTILS_BPF_GAS_CONFIGURE_SYMLINK
+
+define HOST_BINUTILS_CONFIGURE_CMDS
+	(cd $(@D)/$(HOST_BINUTILS_TARGET_BUILDDIR) && rm -rf config.cache; \
+		$(HOST_CONFIGURE_OPTS) \
+		CFLAGS="$(HOST_CFLAGS)" \
+		LDFLAGS="$(HOST_LDFLAGS)" \
+		$(HOST_BINUTILS_CONF_ENV) \
+		./configure \
+		$(QUIET) $(HOST_BINUTILS_CONF_OPTS) \
+	)
+	(cd $(@D)/$(HOST_BINUTILS_BPF_GAS_BUILDDIR) && rm -rf config.cache; \
+		$(HOST_CONFIGURE_OPTS) \
+		CFLAGS="$(HOST_CFLAGS)" \
+		LDFLAGS="$(HOST_LDFLAGS)" \
+		$(HOST_BINUTILS_CONF_ENV) \
+		./configure \
+		$(QUIET) $(HOST_BINUTILS_BPF_GAS_CONF_OPTS) \
+	)
+endef
+
+define HOST_BINUTILS_BUILD_CMDS
+	$(HOST_MAKE_ENV) $(MAKE) $(HOST_BINUTILS_MAKE_OPTS) -C $(@D)/$(HOST_BINUTILS_TARGET_BUILDDIR)
+	$(HOST_MAKE_ENV) $(MAKE) $(HOST_BINUTILS_BFP_GAS_MAKE_OPTS) -C $(@D)/$(HOST_BINUTILS_BPF_GAS_BUILDDIR)
+endef
+
+define HOST_BINUTILS_INSTALL_CMDS
+	$(HOST_MAKE_ENV) $(MAKE) $(HOST_BINUTILS_INSTALL_OPTS) -C $(@D)/$(HOST_BINUTILS_TARGET_BUILDDIR)
+	$(HOST_MAKE_ENV) $(MAKE) $(HOST_BINUTILS_BFP_GAS_INSTALL_OPTS) -C $(@D)/$(HOST_BINUTILS_BPF_GAS_BUILDDIR)
+endef
 
 # We just want libbfd, libiberty and libopcodes,
 # not the full-blown binutils in staging
