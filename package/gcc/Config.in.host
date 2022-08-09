@@ -60,6 +60,10 @@ config BR2_GCC_VERSION_12_X
 
 endchoice
 
+config BR2_GCC_SUPPORTS_BPF
+	bool
+	default y if BR2_TOOLCHAIN_GCC_AT_LEAST_12
+
 # libcilkrts was introduced in gcc 4.9 and removed in gcc 8.x
 config BR2_GCC_SUPPORTS_LIBCILKRTS
 	bool
@@ -93,6 +97,14 @@ config BR2_EXTRA_GCC_CONFIG_OPTIONS
 	  Any additional gcc configure options you may want to
 	  include. Those options are applied for all of the gcc
 	  initial, gcc intermediate and gcc final passes.
+
+config BR2_TOOLCHAIN_BUILDROOT_BPF
+	bool "Enable bpf support"
+	depends on BR2_GCC_SUPPORTS_BPF
+	depends on BR2_PACKAGE_HOST_BINUTILS_SUPPORTS_BPF
+	help
+	  Enable this option if you want your toolchain to support BPF
+	  targets.
 
 config BR2_TOOLCHAIN_BUILDROOT_CXX
 	bool "Enable C++ support"

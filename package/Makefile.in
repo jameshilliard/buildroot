@@ -39,6 +39,9 @@ endif
 # Compute GNU_TARGET_NAME
 GNU_TARGET_NAME = $(ARCH)-$(TARGET_VENDOR)-$(TARGET_OS)-$(LIBC)$(ABI)
 
+# Compute BPF_TARGET_NAME
+BPF_TARGET_NAME = bpf-$(TARGET_VENDOR)-none
+
 # FLAT binary format needs uclinux, except RISC-V 64-bits which needs
 # the regular linux name.
 ifeq ($(BR2_BINFMT_FLAT):$(BR2_RISCV_64),y:)
