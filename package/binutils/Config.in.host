@@ -1,5 +1,10 @@
 comment "Binutils Options"
 
+config BR2_PACKAGE_HOST_BINUTILS_SUPPORTS_BPF
+	bool
+	default y if BR2_BINUTILS_VERSION_2_37_X
+	default y if BR2_BINUTILS_VERSION_2_38_X
+
 config BR2_PACKAGE_HOST_BINUTILS_SUPPORTS_CFI
 	bool
 	default y

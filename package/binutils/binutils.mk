@@ -77,23 +77,115 @@ endif
 
 # "host" binutils should actually be "cross"
 # We just keep the convention of "host utility" for now
-HOST_BINUTILS_CONF_OPTS = \
+HOST_BINUTILS_COMMON_CONF_OPTS = \
+	--prefix="$(HOST_DIR)" \
+	--sysconfdir="$(HOST_DIR)/etc" \
+	--localstatedir="$(HOST_DIR)/var" \
 	--disable-multilib \
 	--disable-werror \
-	--target=$(GNU_TARGET_NAME) \
 	--disable-shared \
 	--enable-static \
-	--with-sysroot=$(STAGING_DIR) \
-	--enable-poison-system-directories \
+	--disable-gtk-doc \
+	--disable-gtk-doc-html \
+	--disable-doc \
+	--disable-docs \
+	--disable-documentation \
+	--disable-debug \
+	--with-xmlto=no \
+	--with-fop=no \
+	--disable-nls \
 	--without-debuginfod \
 	--enable-plugins \
 	--enable-lto \
 	$(BINUTILS_DISABLE_GDB_CONF_OPTS) \
 	$(BINUTILS_EXTRA_CONFIG_OPTIONS)
 
+HOST_BINUTILS_CONF_OPTS = \
+	$(HOST_BINUTILS_COMMON_CONF_OPTS) \
+	--target=$(GNU_TARGET_NAME) \
+	--with-sysroot=$(STAGING_DIR)
+
+HOST_BINUTILS_BPF_CONF_OPTS = \
+	$(HOST_BINUTILS_COMMON_CONF_OPTS) \
+	--target=$(BPF_TARGET_NAME)
+
 # binutils run configure script of subdirs at make time, so ensure
 # our TARGET_CONFIGURE_ARGS are taken into consideration for those
 BINUTILS_MAKE_ENV = $(TARGET_CONFIGURE_ARGS)
+
+HOST_BINUTILS_TARGET_BUILDDIR = build
+HOST_BINUTILS_BPF_BUILDDIR = build-bpf
+
+define HOST_BINUTILS_TARGET_CONFIGURE_SYMLINK
+	mkdir -p $(@D)/$(HOST_BINUTILS_TARGET_BUILDDIR)
+	ln -sf ../configure $(@D)/$(HOST_BINUTILS_TARGET_BUILDDIR)/configure
+endef
+HOST_BINUTILS_PRE_CONFIGURE_HOOKS += HOST_BINUTILS_TARGET_CONFIGURE_SYMLINK
+
+ifeq ($(BR2_TOOLCHAIN_BUILDROOT_BPF),y)
+define HOST_BINUTILS_BPF_CONFIGURE_SYMLINK
+	mkdir -p $(@D)/$(HOST_BINUTILS_BPF_BUILDDIR)
+	ln -sf ../configure $(@D)/$(HOST_BINUTILS_BPF_BUILDDIR)/configure
+endef
+HOST_BINUTILS_PRE_CONFIGURE_HOOKS += HOST_BINUTILS_BPF_CONFIGURE_SYMLINK
+endif
+
+define HOST_BINUTILS_TARGET_CONFIGURE_CMDS
+	(cd $(@D)/$(HOST_BINUTILS_TARGET_BUILDDIR) && rm -rf config.cache; \
+		$(HOST_CONFIGURE_OPTS) \
+		CFLAGS="$(HOST_CFLAGS)" \
+		LDFLAGS="$(HOST_LDFLAGS)" \
+		$(HOST_BINUTILS_CONF_ENV) \
+		./configure \
+		$(QUIET) $(HOST_BINUTILS_CONF_OPTS) \
+	)
+endef
+
+ifeq ($(BR2_TOOLCHAIN_BUILDROOT_BPF),y)
+define HOST_BINUTILS_BPF_CONFIGURE_CMDS
+	(cd $(@D)/$(HOST_BINUTILS_BPF_BUILDDIR) && rm -rf config.cache; \
+		$(HOST_CONFIGURE_OPTS) \
+		CFLAGS="$(HOST_CFLAGS)" \
+		LDFLAGS="$(HOST_LDFLAGS)" \
+		$(HOST_BINUTILS_CONF_ENV) \
+		./configure \
+		$(QUIET) $(HOST_BINUTILS_BPF_CONF_OPTS) \
+	)
+endef
+endif
+
+define HOST_BINUTILS_CONFIGURE_CMDS
+	$(HOST_BINUTILS_TARGET_CONFIGURE_CMDS)
+	$(HOST_BINUTILS_BPF_CONFIGURE_CMDS)
+endef
+
+define HOST_BINUTILS_TARGET_BUILD_CMDS
+	$(HOST_MAKE_ENV) $(MAKE) $(HOST_BINUTILS_MAKE_OPTS) -C $(@D)/$(HOST_BINUTILS_TARGET_BUILDDIR)
+endef
+
+ifeq ($(BR2_TOOLCHAIN_BUILDROOT_BPF),y)
+define HOST_BINUTILS_BPF_BUILD_CMDS
+	$(HOST_MAKE_ENV) $(MAKE) $(HOST_BINUTILS_MAKE_OPTS) -C $(@D)/$(HOST_BINUTILS_BPF_BUILDDIR)
+endef
+endif
+
+define HOST_BINUTILS_BUILD_CMDS
+	$(HOST_BINUTILS_TARGET_BUILD_CMDS)
+	$(HOST_BINUTILS_BPF_BUILD_CMDS)
+endef
+
+define HOST_BINUTILS_TARGET_INSTALL_CMDS
+	$(HOST_MAKE_ENV) $(MAKE) $(HOST_BINUTILS_INSTALL_OPTS) -C $(@D)/$(HOST_BINUTILS_TARGET_BUILDDIR)
+endef
+
+define HOST_BINUTILS_BPF_INSTALL_CMDS
+	$(HOST_MAKE_ENV) $(MAKE) $(HOST_BINUTILS_INSTALL_OPTS) -C $(@D)/$(HOST_BINUTILS_BPF_BUILDDIR)
+endef
+
+define HOST_BINUTILS_INSTALL_CMDS
+	$(HOST_BINUTILS_TARGET_INSTALL_CMDS)
+	$(HOST_BINUTILS_BPF_INSTALL_CMDS)
+endef
 
 # We just want libbfd, libiberty and libopcodes,
 # not the full-blown binutils in staging
