@@ -103,6 +103,15 @@ GCC_COMMON_TARGET_CFLAGS += -matomic
 GCC_COMMON_TARGET_CXXFLAGS += -matomic
 endif
 
+# Enable GCC target libs optimizations to optimize out __register_frame
+# when needed for some architectures when building with glibc.
+ifeq ($(BR2_TOOLCHAIN_USES_GLIBC)$(BR2_OPTIMIZE_0),yy)
+ifeq ($(BR2_microblazebe)$(BR2_microblazeel)$(BR2_mips)$(BR2_mipsel)$(BR2_nios2)$(BR2_or1k)$(BR2_sh),y)
+GCC_COMMON_TARGET_CFLAGS += -O1
+GCC_COMMON_TARGET_CXXFLAGS += -O1
+endif
+endif
+
 # Propagate options used for target software building to GCC target libs
 HOST_GCC_COMMON_CONF_ENV += CFLAGS_FOR_TARGET="$(GCC_COMMON_TARGET_CFLAGS)"
 HOST_GCC_COMMON_CONF_ENV += CXXFLAGS_FOR_TARGET="$(GCC_COMMON_TARGET_CXXFLAGS)"
