@@ -1,0 +1,36 @@
+From b1261baefd2bb9095af56859c1cac6b1166fb13f Mon Sep 17 00:00:00 2001
+From: James Hilliard <james.hilliard1@gmail.com>
+Date: Sun, 29 Jan 2023 16:55:08 -0700
+Subject: [PATCH] Enable CXX only when needed for tests
+
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+[Upstream status:
+https://github.com/pytorch/cpuinfo/pull/133]
+---
+ CMakeLists.txt | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b2f9434..879c9fa 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -3,7 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.5 FATAL_ERROR)
+ # ---[ Setup project
+ PROJECT(
+     cpuinfo
+-    LANGUAGES C CXX
++    LANGUAGES C
+     )
+ 
+ # ---[ Options.
+@@ -763,6 +763,7 @@ ENDIF()
+ 
+ # ---[ cpuinfo unit tests
+ IF(CPUINFO_SUPPORTED_PLATFORM AND CPUINFO_BUILD_UNIT_TESTS)
++  ENABLE_LANGUAGE(CXX)
+   ADD_EXECUTABLE(init-test test/init.cc)
+   CPUINFO_TARGET_ENABLE_CXX11(init-test)
+   CPUINFO_TARGET_RUNTIME_LIBRARY(init-test)
+-- 
+2.34.1
+
