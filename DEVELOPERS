@@ -2687,6 +2687,7 @@ F:	package/ti-gfx/
 
 N:	Stefan Hager <stefan.hager@ginzinger.com>
 F:	package/cpuinfo/
+F:	package/ruy/
 
 N:	Stefan Ott <stefan@ott.net>
 F:	package/unbound/
