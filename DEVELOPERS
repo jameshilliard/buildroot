@@ -2708,6 +2708,7 @@ F:	package/fft2d/
 F:	package/gemmlowp/
 F:	package/neon-2-sse/
 F:	package/ruy/
+F:	package/tensorflow-lite/
 
 N:	Stefan Ott <stefan@ott.net>
 F:	package/unbound/
