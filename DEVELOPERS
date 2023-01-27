@@ -2710,6 +2710,7 @@ F:	package/neon-2-sse/
 F:	package/psimd/
 F:	package/pthreadpool/
 F:	package/ruy/
+F:	package/xnnpack/
 
 N:	Stefan Ott <stefan@ott.net>
 F:	package/unbound/
