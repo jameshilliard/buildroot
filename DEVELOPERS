@@ -2703,6 +2703,7 @@ F:	package/ti-gfx/
 
 N:	Stefan Hager <stefan.hager@ginzinger.com>
 F:	package/cpuinfo/
+F:	package/fxdiv/
 F:	package/gemmlowp/
 F:	package/neon-2-sse/
 F:	package/ruy/
