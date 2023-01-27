@@ -2706,6 +2706,7 @@ F:	package/cpuinfo/
 F:	package/fxdiv/
 F:	package/gemmlowp/
 F:	package/neon-2-sse/
+F:	package/pthreadpool/
 F:	package/ruy/
 
 N:	Stefan Ott <stefan@ott.net>
