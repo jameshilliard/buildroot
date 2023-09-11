@@ -60,6 +60,18 @@ config BR2_PACKAGE_SWUPDATE_CONFIG
 	  I you wish to use your own modified swupdate configuration
 	  file specify the config file location with this option.
 
+config BR2_PACKAGE_SWUPDATE_EMBEDDED_LUA_HANDLER
+	bool "swupdate embedded lua handler"
+	depends on BR2_PACKAGE_HAS_LUAINTERPRETER
+	help
+	  Enable the embedded lua handler.
+
+config BR2_PACKAGE_SWUPDATE_EMBEDDED_LUA_HANDLER_SOURCE
+	string "swupdate embedded lua handler source"
+	depends on BR2_PACKAGE_SWUPDATE_EMBEDDED_LUA_HANDLER
+	help
+	  Path to the embedded lua handler source.
+
 config BR2_PACKAGE_SWUPDATE_USB
 	bool "swupdate usb"
 	depends on BR2_PACKAGE_SYSTEMD
