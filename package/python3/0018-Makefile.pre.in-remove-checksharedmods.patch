@@ -1,0 +1,28 @@
+From 3838c755b92c74f4d42d6704c55309c32f986c53 Mon Sep 17 00:00:00 2001
+From: Bernd Kuhls <bernd@kuhls.net>
+Date: Tue, 3 Oct 2023 16:30:19 +0200
+Subject: [PATCH] Makefile.pre.in: remove checksharedmods
+
+Broken when cross compiling.
+
+Signed-off-by: Bernd Kuhls <bernd@kuhls.net>
+---
+ Makefile.pre.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile.pre.in b/Makefile.pre.in
+index 2599d20a11..e228ec6fec 100644
+--- a/Makefile.pre.in
++++ b/Makefile.pre.in
+@@ -613,7 +613,7 @@ all:		@DEF_MAKE_ALL_RULE@
+ 
+ .PHONY: build_all
+ build_all:	check-clean-src $(BUILDPYTHON) platform sharedmods \
+-		gdbhooks Programs/_testembed scripts checksharedmods rundsymutil
++		gdbhooks Programs/_testembed scripts rundsymutil
+ 
+ .PHONY: build_wasm
+ build_wasm: check-clean-src $(BUILDPYTHON) platform sharedmods \
+-- 
+2.39.2
+
