@@ -12,3 +12,4 @@ PYTHON_DISTRO_LICENSE_FILES = LICENSE
 PYTHON_DISTRO_SETUP_TYPE = setuptools
 
 $(eval $(python-package))
+$(eval $(host-python-package))
