@@ -1,0 +1,5 @@
+# md5, sha256 from https://pypi.org/pypi/swig/json
+md5  c2bf820a545f333d47b7be513baaee3c  swig-4.1.1.post1.tar.gz
+sha256  5cbf2d4dfc413f74cac197704296a9ef065a3f81c7b3792ff11a56d312c4f652  swig-4.1.1.post1.tar.gz
+# Locally computed sha256 checksums
+sha256  73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68  LICENSE
