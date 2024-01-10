@@ -1,0 +1,5 @@
+# md5, sha256 from https://pypi.org/pypi/libclang/json
+md5  fffb0029127aa45bbdc46da944a97693  libclang-16.0.6.tar.gz
+sha256  4acdde39dfe410c877b4ccc0d4b57eb952100e4ee26bbdf6cfdb88e2033a7d31  libclang-16.0.6.tar.gz
+# Locally computed sha256 checksums
+sha256  ebcd9bbf783a73d05c53ba4d586b8d5813dcdf3bbec50265860ccc885e606f47  LICENSE.TXT
