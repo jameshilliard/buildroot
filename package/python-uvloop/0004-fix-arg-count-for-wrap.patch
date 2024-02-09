@@ -1,0 +1,51 @@
+From afef6364c2c3100ab23c2bb2de82d2da330b258c Mon Sep 17 00:00:00 2001
+From: alan-brooks <12380017+alan-brooks@users.noreply.github.com>
+Date: Fri, 29 Dec 2023 11:24:19 +0000
+Subject: [PATCH] fix arg count for wrap()
+
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+Upstream: https://github.com/MagicStack/uvloop/pull/587
+---
+ uvloop/loop.pxd | 2 +-
+ uvloop/loop.pyx | 5 ++---
+ 2 files changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/uvloop/loop.pxd b/uvloop/loop.pxd
+index f90c704..d34ffeb 100644
+--- a/uvloop/loop.pxd
++++ b/uvloop/loop.pxd
+@@ -220,7 +220,7 @@ cdef class Loop:
+     cdef inline _ceval_process_signals(self)
+     cdef _invoke_signals(self, bytes data)
+ 
+-    cdef _set_coroutine_debug(self, bint enabled)
++    cpdef _set_coroutine_debug(self, bint enabled)
+ 
+     cdef _print_debug_info(self)
+ 
+diff --git a/uvloop/loop.pyx b/uvloop/loop.pyx
+index 75b915a..a3eeb60 100644
+--- a/uvloop/loop.pyx
++++ b/uvloop/loop.pyx
+@@ -1131,7 +1131,7 @@ cdef class Loop:
+         if err < 0:
+             raise convert_error(-errno.errno)
+ 
+-    cdef _set_coroutine_debug(self, bint enabled):
++    cpdef _set_coroutine_debug(self, bint enabled):
+         enabled = bool(enabled)
+         if self._coroutine_debug_set == enabled:
+             return
+@@ -1396,8 +1396,7 @@ cdef class Loop:
+     def set_debug(self, enabled):
+         self._debug = bool(enabled)
+         if self.is_running():
+-            args = ((self, self._debug),) if sys.version_info < (3, 11) else (self._debug,)
+-            self.call_soon_threadsafe(self._set_coroutine_debug, *args)
++             self.call_soon_threadsafe(self._set_coroutine_debug, self._debug)
+ 
+     def is_running(self):
+         """Return whether the event loop is currently running."""
+-- 
+2.34.1
+

@@ -1,0 +1,30 @@
+From ef5c3e5c6f331692ebcbea9e4c6aead8b2187038 Mon Sep 17 00:00:00 2001
+From: alan-brooks <12380017+alan-brooks@users.noreply.github.com>
+Date: Thu, 28 Dec 2023 19:58:11 +0000
+Subject: [PATCH] fix tests on python 3.8
+
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+Upstream: https://github.com/MagicStack/uvloop/pull/587
+---
+ uvloop/loop.pyx | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/uvloop/loop.pyx b/uvloop/loop.pyx
+index 5ca718e..75b915a 100644
+--- a/uvloop/loop.pyx
++++ b/uvloop/loop.pyx
+@@ -1396,9 +1396,8 @@ cdef class Loop:
+     def set_debug(self, enabled):
+         self._debug = bool(enabled)
+         if self.is_running():
+-            args = (self, self._debug) if sys.version_info < (3, 11) else (self._debug,)
+-            self.call_soon_threadsafe(
+-                self._set_coroutine_debug, *args)
++            args = ((self, self._debug),) if sys.version_info < (3, 11) else (self._debug,)
++            self.call_soon_threadsafe(self._set_coroutine_debug, *args)
+ 
+     def is_running(self):
+         """Return whether the event loop is currently running."""
+-- 
+2.34.1
+
