@@ -85,10 +85,12 @@ define $(2)_GEN_GOMOD
 endef
 $(2)_POST_PATCH_HOOKS += $(2)_GEN_GOMOD
 
+$(2)_DL_GOPROXY ?= direct
+
 $(2)_DOWNLOAD_POST_PROCESS = go
 $(2)_DL_ENV += \
 	$$(HOST_GO_COMMON_ENV) \
-	GOPROXY=direct \
+	GOPROXY=$$($(2)_DL_GOPROXY) \
 	$$($(2)_GO_ENV)
 
 # Because we append vendored info, we can't rely on the values being empty
