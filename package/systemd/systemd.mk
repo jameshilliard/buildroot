@@ -899,6 +899,17 @@ endef
 # We need a very minimal host variant, so we disable as much as possible.
 HOST_SYSTEMD_CONF_OPTS = \
 	-Dsplit-bin=true \
+	-Dlink-udev-shared=false \
+	-Dlink-executor-shared=false \
+	-Dlink-systemctl-shared=false \
+	-Dlink-networkd-shared=false \
+	-Dlink-timesyncd-shared=false \
+	-Dlink-journalctl-shared=false \
+	-Dlink-boot-shared=false \
+	-Dlink-portabled-shared=false \
+	-Dstatic-libsystemd=true \
+	-Dstatic-libudev=true \
+	-Dstandalone-binaries=true \
 	--prefix=/usr \
 	--libdir=lib \
 	--sysconfdir=/etc \
@@ -1021,25 +1032,6 @@ HOST_SYSTEMD_DEPENDENCIES = \
 	host-python-jinja2
 
 HOST_SYSTEMD_NINJA_ENV = DESTDIR=$(HOST_DIR)
-
-# Fix RPATH After installation
-# * systemd provides a install_rpath instruction to meson because the binaries
-#   need to link with libsystemd which is not in a standard path
-# * meson can only replace the RPATH, not append to it
-# * the original rpath is thus lost.
-# * the original path had been tweaked by buildroot via LDFLAGS to add
-#   $(HOST_DIR)/lib
-# * thus re-tweak rpath after the installation for all binaries that need it
-HOST_SYSTEMD_HOST_TOOLS = busctl journalctl systemctl systemd-* udevadm
-
-define HOST_SYSTEMD_FIX_RPATH
-	for f in $(addprefix $(HOST_DIR)/bin/,$(HOST_SYSTEMD_HOST_TOOLS)); do \
-		[ -e $$f ] || continue; \
-		$(HOST_DIR)/bin/patchelf --set-rpath $(HOST_DIR)/lib:$(HOST_DIR)/lib/systemd $${f} \
-		|| exit 1; \
-	done
-endef
-HOST_SYSTEMD_POST_INSTALL_HOOKS += HOST_SYSTEMD_FIX_RPATH
 
 $(eval $(meson-package))
 $(eval $(host-meson-package))

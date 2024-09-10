@@ -25,7 +25,7 @@
 # [1] - https://github.com/systemd/systemd/pull/16187
 
 [ -n "${HOST_SYSTEMD_TMPFILES-}" ] ||
-    HOST_SYSTEMD_TMPFILES=systemd-tmpfiles
+    HOST_SYSTEMD_TMPFILES=systemd-tmpfiles.standalone
 
 [ -n "${1-}" -a -d "${1-}"/usr/lib/tmpfiles.d ] ||
     { echo 1>&2 "$0: need ROOTFS argument"; exit 1; }
