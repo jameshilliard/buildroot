@@ -1,0 +1,23 @@
+config BR2_PACKAGE_LIBPPD
+	bool "libppd"
+	# needs fork()
+	depends on BR2_USE_MMU
+	depends on BR2_INSTALL_LIBSTDCPP # libcupsfilters -> qpdf
+	depends on !BR2_STATIC_LIBS
+	depends on BR2_PACKAGE_CUPS
+	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_5 # libcupsfilters -> qpdf
+	depends on BR2_TOOLCHAIN_HAS_ATOMIC # libcupsfilters -> qpdf
+	select BR2_PACKAGE_LIBCUPSFILTERS
+	help
+	  To avoid re-writing support for an obsolete format from
+	  scratch, only for retro-fitting legacy printer drivers
+	  we have created this package, libppd, the legacy support
+	  library for PPD files.
+
+	  https://github.com/OpenPrinting/libppd
+
+comment "libppd needs a toolchain w/ C++ and dynamic library, gcc >= 5"
+	depends on BR2_USE_MMU
+	depends on BR2_TOOLCHAIN_HAS_ATOMIC
+	depends on !BR2_INSTALL_LIBSTDCPP || \
+		BR2_STATIC_LIBS || !BR2_TOOLCHAIN_GCC_AT_LEAST_5
