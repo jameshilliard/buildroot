@@ -1,3 +1,4 @@
 # Locally computed:
-sha256  01a2acbd6bb78f09638047e4e9ce305d7e5ef4cb9ed6949672b5d901b7321dd4  cups-filters-1.28.17.tar.gz
-sha256  38192ffdaca98b718f78b2d4abc38bb087f0bbcc9a16d212c98b903b985f900f  COPYING
+sha256  39e71de3ce06762b342749f1dc7cba6817738f7bf4d322c1bb9ab10b8569ab80  cups-filters-2.0.1.tar.xz
+sha256  944512aa3c095722752ea2eb1aa6c32ee9ffc3e7f9fb6aab5ea56f6b64ec42ec  COPYING
+sha256  cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30  LICENSE
