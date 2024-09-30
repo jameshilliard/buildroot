@@ -4,36 +4,53 @@
 #
 ################################################################################
 
-QPDF_VERSION = 10.5.0
+QPDF_VERSION = 11.9.1
 QPDF_SITE = http://downloads.sourceforge.net/project/qpdf/qpdf/$(QPDF_VERSION)
 QPDF_INSTALL_STAGING = YES
+QPDF_SUPPORTS_IN_SOURCE_BUILD = NO
 QPDF_LICENSE = Apache-2.0 or Artistic-2.0
 QPDF_LICENSE_FILES = LICENSE.txt Artistic-2.0
 QPDF_CPE_ID_VALID = YES
 QPDF_DEPENDENCIES = host-pkgconf zlib jpeg
 
-QPDF_CONF_OPTS = --with-random=/dev/urandom
+QPDF_CONF_OPTS = \
+	-DBUILD_DOC=OFF \
+	-DENABLE_COVERAGE=OFF \
+	-DQTEST_COLOR=OFF \
+	-DINSTALL_EXAMPLES=OFF
+
+ifeq ($(BR2_SHARED_LIBS)$(BR2_SHARED_STATIC_LIBS),y)
+QPDF_CONF_OPTS += -DBUILD_SHARED_LIBS=ON
+else
+QPDF_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
+endif
+
+ifeq ($(BR2_STATIC_LIBS)$(BR2_SHARED_STATIC_LIBS),y)
+QPDF_CONF_OPTS += -DBUILD_STATIC_LIBS=ON
+else
+QPDF_CONF_OPTS += -DBUILD_STATIC_LIBS=OFF
+endif
 
 ifeq ($(BR2_USE_WCHAR),)
 QPDF_CONF_ENV += CXXFLAGS="$(TARGET_CXXFLAGS) -DQPDF_NO_WCHAR_T"
 endif
 
 ifeq ($(BR2_PACKAGE_GNUTLS),y)
-QPDF_CONF_OPTS += --enable-crypto-gnutls
+QPDF_CONF_OPTS += -DREQUIRE_CRYPTO_GNUTLS=ON
 QPDF_DEPENDENCIES += gnutls
 else
-QPDF_CONF_OPTS += --disable-crypto-gnutls
+QPDF_CONF_OPTS += -DREQUIRE_CRYPTO_GNUTLS=OFF
 endif
 
 ifeq ($(BR2_PACKAGE_OPENSSL),y)
-QPDF_CONF_OPTS += --enable-crypto-openssl
+QPDF_CONF_OPTS += -DREQUIRE_CRYPTO_OPENSSL=ON
 QPDF_DEPENDENCIES += openssl
 else
-QPDF_CONF_OPTS += --disable-crypto-openssl
+QPDF_CONF_OPTS += -DREQUIRE_CRYPTO_OPENSSL=OFF
 endif
 
 ifeq ($(BR2_TOOLCHAIN_HAS_LIBATOMIC),y)
 QPDF_CONF_ENV += LIBS=-latomic
 endif
 
-$(eval $(autotools-package))
+$(eval $(cmake-package))
