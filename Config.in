@@ -267,6 +267,17 @@ config BR2_PRIMARY_SITE_ONLY
 	  the project can be built even if the upstream tarball
 	  locations disappear.
 
+config BR2_GOPROXY_LIST
+	string "GOPROXY list"
+	default "https://proxy.golang.org,direct"
+	depends on BR2_PACKAGE_HOST_GO_TARGET_ARCH_SUPPORTS
+	help
+	  List of module proxy URLs. The go command will attempt to
+	  download modules from each server in sequence. The keyword
+	  direct instructs the go command to download modules from
+	  version control repositories where they’re developed instead
+	  of using a proxy.
+
 if !BR2_PRIMARY_SITE_ONLY
 
 config BR2_BACKUP_SITE
