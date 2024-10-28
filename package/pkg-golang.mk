@@ -21,7 +21,6 @@
 #
 ################################################################################
 
-GO_BIN = $(HOST_DIR)/bin/go
 
 ################################################################################
 # inner-golang-package -- defines how the configuration, compilation and
@@ -39,6 +38,14 @@ GO_BIN = $(HOST_DIR)/bin/go
 ################################################################################
 
 define inner-golang-package
+
+ifndef $(2)_GO_BIN
+	ifdef $(3)_GO_BIN
+		$(2)_GO_BIN = $$($(3)_GO_BIN)
+	else
+		$(2)_GO_BIN ?= $$(HOST_DIR)/bin/go
+	endif
+endif
 
 $(2)_BUILD_OPTS += \
 	-ldflags "$$($(2)_LDFLAGS)" \
@@ -143,7 +150,7 @@ define $(2)_BUILD_CMDS
 		cd $$(@D)/$$($(2)_SUBDIR); \
 		$$(HOST_GO_TARGET_ENV) \
 			$$($(2)_GO_ENV) \
-			$$(GO_BIN) build -v $$($(2)_BUILD_OPTS) \
+			$$($(2)_GO_BIN) build -v $$($(2)_BUILD_OPTS) \
 			-o $$(@D)/bin/$$(or $$($(2)_BIN_NAME),$$(notdir $$(d))) \
 			$$($(2)_GOMOD)/$$(d)
 	)
@@ -155,7 +162,7 @@ define $(2)_BUILD_CMDS
 		cd $$(@D)/$$($(2)_SUBDIR); \
 		$$(HOST_GO_HOST_ENV) \
 			$$($(2)_GO_ENV) \
-			$$(GO_BIN) build -v $$($(2)_BUILD_OPTS) \
+			$$($(2)_GO_BIN) build -v $$($(2)_BUILD_OPTS) \
 			-o $$(@D)/bin/$$(or $$($(2)_BIN_NAME),$$(notdir $$(d))) \
 			$$($(2)_GOMOD)/$$(d)
 	)
