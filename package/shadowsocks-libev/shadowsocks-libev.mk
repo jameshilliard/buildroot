@@ -4,8 +4,12 @@
 #
 ################################################################################
 
-SHADOWSOCKS_LIBEV_VERSION = 3.3.5
-SHADOWSOCKS_LIBEV_SITE = https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$(SHADOWSOCKS_LIBEV_VERSION)
+# Generate version string using:
+#   git describe --tags --match 'v3.3.5' --abbrev=40 origin/master
+SHADOWSOCKS_LIBEV_VERSION = v3.3.5-53-g9afa3cacf947f910be46b69fc5a7a1fdd02fd5e6
+SHADOWSOCKS_LIBEV_SITE = https://github.com/shadowsocks/shadowsocks-libev
+SHADOWSOCKS_LIBEV_SITE_METHOD = git
+SHADOWSOCKS_LIBEV_GIT_SUBMODULES = YES
 SHADOWSOCKS_LIBEV_LICENSE = GPL-3.0+, BSD-2-Clause (libbloom), BSD-3-Clause (libcork, libipset)
 SHADOWSOCKS_LIBEV_LICENSE_FILES = COPYING libbloom/LICENSE libcork/COPYING
 SHADOWSOCKS_LIBEV_CPE_ID_VENDOR = shadowsocks
