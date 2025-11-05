@@ -463,6 +463,7 @@ include package/pkg-autotools.mk
 include package/pkg-cmake.mk
 include package/pkg-luarocks.mk
 include package/pkg-perl.mk
+include package/pkg-meson.mk
 include package/pkg-python.mk
 include package/pkg-virtual.mk
 include package/pkg-generic.mk
@@ -471,6 +472,5 @@ include package/pkg-rebar.mk
 include package/pkg-kernel-module.mk
 include package/pkg-waf.mk
 include package/pkg-golang.mk
-include package/pkg-meson.mk
 include package/pkg-qmake.mk
 include package/pkg-cargo.mk

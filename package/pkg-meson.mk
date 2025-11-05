@@ -29,6 +29,11 @@ MESON		= PYTHONNOUSERSITE=y $(HOST_DIR)/bin/meson
 NINJA		= PYTHONNOUSERSITE=y $(HOST_DIR)/bin/ninja
 NINJA_OPTS	= $(if $(VERBOSE),-v)
 
+################################################################################
+# Common Meson variables exposed for reuse by other infrastructures
+# (e.g., pkg-python.mk for meson-python packages)
+################################################################################
+
 # https://mesonbuild.com/Reference-tables.html#cpu-families
 ifeq ($(BR2_arcle)$(BR2_arceb),y)
 PKG_MESON_TARGET_CPU_FAMILY = arc
@@ -89,6 +94,29 @@ PKG_MESON_DEFAULT_LIBRARY=shared
 else ifeq ($(BR2_SHARED_STATIC_LIBS),y)
 PKG_MESON_DEFAULT_LIBRARY=both
 endif
+
+# Common Meson configuration options for target packages
+PKG_MESON_TARGET_OPTS = \
+	--prefix=/usr \
+	--libdir=lib \
+	--default-library=$(PKG_MESON_DEFAULT_LIBRARY) \
+	--buildtype=$(if $(BR2_ENABLE_RUNTIME_DEBUG),debug,release) \
+	-Db_pie=false \
+	-Db_staticpic=$(if $(BR2_m68k_cf),false,true) \
+	-Dstrip=false \
+	-Dbuild.pkg_config_path=$(HOST_DIR)/lib/pkgconfig \
+	-Dbuild.cmake_prefix_path=$(HOST_DIR)/lib/cmake
+
+# Common Meson configuration options for host packages
+PKG_MESON_HOST_OPTS = \
+	--prefix=$(HOST_DIR) \
+	--libdir=lib \
+	--sysconfdir=$(HOST_DIR)/etc \
+	--localstatedir=$(HOST_DIR)/var \
+	--default-library=shared \
+	--buildtype=release \
+	--wrap-mode=nodownload \
+	-Dstrip=true
 
 # Generates sed patterns for patching the cross-compilation.conf template,
 # since Flags might contain commas the arguments are passed indirectly by
@@ -158,16 +186,8 @@ define $(2)_CONFIGURE_CMDS
 	CXX_FOR_BUILD="$$(HOSTCXX)" \
 	$$($$(PKG)_CONF_ENV) \
 	$$(MESON) setup \
-		--prefix=/usr \
-		--libdir=lib \
-		--default-library=$(PKG_MESON_DEFAULT_LIBRARY) \
-		--buildtype=$(if $(BR2_ENABLE_RUNTIME_DEBUG),debug,release) \
+		$$(PKG_MESON_TARGET_OPTS) \
 		--cross-file=$$($$(PKG)_SRCDIR)/buildroot-build/cross-compilation.conf \
-		-Db_pie=false \
-		-Db_staticpic=$(if $(BR2_m68k_cf),false,true) \
-		-Dstrip=false \
-		-Dbuild.pkg_config_path=$$(HOST_DIR)/lib/pkgconfig \
-		-Dbuild.cmake_prefix_path=$$(HOST_DIR)/lib/cmake \
 		$$($$(PKG)_CONF_OPTS) \
 		$$($$(PKG)_SRCDIR) $$($$(PKG)_SRCDIR)/buildroot-build
 endef
@@ -179,14 +199,7 @@ define $(2)_CONFIGURE_CMDS
 	mkdir -p $$($$(PKG)_SRCDIR)/buildroot-build
 	$$(HOST_CONFIGURE_OPTS) \
 	$$($$(PKG)_CONF_ENV) $$(MESON) setup \
-		--prefix=$$(HOST_DIR) \
-		--libdir=lib \
-		--sysconfdir=$$(HOST_DIR)/etc \
-		--localstatedir=$$(HOST_DIR)/var \
-		--default-library=shared \
-		--buildtype=release \
-		--wrap-mode=nodownload \
-		-Dstrip=true \
+		$$(PKG_MESON_HOST_OPTS) \
 		$$($$(PKG)_CONF_OPTS) \
 		$$($$(PKG)_SRCDIR) $$($$(PKG)_SRCDIR)/buildroot-build
 endef

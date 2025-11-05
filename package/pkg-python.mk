@@ -285,6 +285,64 @@ HOST_PKG_PYTHON_POETRY_BUILD_CMD = \
 HOST_PKG_PYTHON_POETRY_INSTALL_CMD = \
 	$(HOST_PKG_PYTHON_PEP517_INSTALL_CMD)
 
+# Target meson-python packages
+# Meson options for meson-python packages (excluding those that meson-python sets)
+# meson-python already sets: --prefix, --libdir, --buildtype, -Dbuildtype, -Db_ndebug, -Db_vscrt
+PKG_MESON_PYTHON_TARGET_OPTS = \
+	--default-library=$(PKG_MESON_DEFAULT_LIBRARY) \
+	-Db_pie=false \
+	-Db_staticpic=$(if $(BR2_m68k_cf),false,true) \
+	-Dstrip=false \
+	-Dbuild.pkg_config_path=$(HOST_DIR)/lib/pkgconfig \
+	-Dbuild.cmake_prefix_path=$(HOST_DIR)/lib/cmake
+
+# Meson options for host meson-python packages (excluding those that meson-python sets)
+PKG_MESON_PYTHON_HOST_OPTS = \
+	--sysconfdir=$(HOST_DIR)/etc \
+	--localstatedir=$(HOST_DIR)/var \
+	--default-library=shared \
+	--wrap-mode=nodownload \
+	-Dstrip=true
+
+# Cross-compilation environment for meson-python packages
+PKG_MESON_PYTHON_CROSS_ENV = \
+	MESON_CROSS_CPU_FAMILY="$(PKG_MESON_TARGET_CPU_FAMILY)" \
+	MESON_CROSS_CPU="$(GCC_TARGET_CPU)" \
+	MESON_CROSS_ENDIAN="$(call qstrip,$(call LOWERCASE,$(BR2_ENDIAN)))" \
+	CC="$(TARGET_CC)" \
+	CXX="$(PKG_MESON_TARGET_CXX)" \
+	AR="$(TARGET_AR)" \
+	FC="$(PKG_MESON_TARGET_FC)" \
+	STRIP="$(TARGET_STRIP)"
+
+PKG_PYTHON_MESON_PYTHON_ENV = \
+	$(PKG_PYTHON_PEP517_ENV) \
+	$(PKG_MESON_PYTHON_CROSS_ENV)
+
+PKG_PYTHON_MESON_PYTHON_BUILD_CMD = \
+	$(PKG_PYTHON_PEP517_BUILD_CMD)
+
+PKG_PYTHON_MESON_PYTHON_INSTALL_TARGET_CMD = \
+	$(PKG_PYTHON_PEP517_INSTALL_TARGET_CMD)
+
+PKG_PYTHON_MESON_PYTHON_INSTALL_STAGING_CMD = \
+	$(PKG_PYTHON_PEP517_INSTALL_STAGING_CMD)
+
+PKG_PYTHON_MESON_PYTHON_DEPENDENCIES = \
+	$(PKG_PYTHON_PEP517_DEPENDENCIES) \
+	host-python-meson-python \
+	host-meson
+
+# Host meson-python packages
+HOST_PKG_PYTHON_MESON_PYTHON_ENV = \
+	$(HOST_PKG_PYTHON_PEP517_ENV)
+
+HOST_PKG_PYTHON_MESON_PYTHON_BUILD_CMD = \
+	$(HOST_PKG_PYTHON_PEP517_BUILD_CMD)
+
+HOST_PKG_PYTHON_MESON_PYTHON_INSTALL_CMD = \
+	$(HOST_PKG_PYTHON_PEP517_INSTALL_CMD)
+
 ################################################################################
 # inner-python-package -- defines how the configuration, compilation
 # and installation of a Python package should be done, implements a
@@ -311,8 +369,8 @@ endif
 
 $(2)_SETUP_TYPE_UPPER = $$(call UPPERCASE,$$($(2)_SETUP_TYPE))
 
-ifneq ($$(filter-out setuptools setuptools-rust pep517 flit flit-bootstrap hatch maturin poetry,$$($(2)_SETUP_TYPE)),)
-$$(error "Invalid $(2)_SETUP_TYPE. Valid options are 'maturin', 'setuptools', 'setuptools-rust', 'pep517', 'flit', 'hatch' or 'poetry'.")
+ifneq ($$(filter-out setuptools setuptools-rust pep517 flit flit-bootstrap hatch maturin poetry meson-python,$$($(2)_SETUP_TYPE)),)
+$$(error "Invalid $(2)_SETUP_TYPE. Valid options are 'maturin', 'setuptools', 'setuptools-rust', 'pep517', 'flit', 'hatch', 'poetry' or 'meson-python'.")
 endif
 ifeq ($(4)-$$($(2)_SETUP_TYPE),target-flit-bootstrap)
 $$(error flit-bootstrap setup type only supported for host packages)
@@ -375,18 +433,39 @@ $(2)_DOWNLOAD_DEPENDENCIES = host-rustc
 endif # SETUP_TYPE
 
 ifeq ($(4),target)
+
+# For meson-python packages, set default CFLAGS/CXXFLAGS/LDFLAGS/FCFLAGS
+# similar to regular meson packages
+ifeq ($$($(2)_SETUP_TYPE),meson-python)
+$(2)_CFLAGS ?= $$(TARGET_CFLAGS)
+$(2)_LDFLAGS ?= $$(TARGET_LDFLAGS)
+$(2)_CXXFLAGS ?= $$(TARGET_CXXFLAGS)
+$(2)_FCFLAGS ?= $$(TARGET_FCFLAGS)
+endif
+
 #
 # Build step. Only define it if not already defined by the package .mk
 # file.
 #
 ifndef $(2)_BUILD_CMDS
 define $(2)_BUILD_CMDS
+	$$(if $$(filter meson-python,$$($$(PKG)_SETUP_TYPE)), \
+		rm -rf $$($$(PKG)_BUILDDIR)/buildroot-meson-python; \
+		mkdir -p $$($$(PKG)_BUILDDIR)/buildroot-meson-python; \
+		sed -e "/^\[binaries\]$$$$/s:$$$$:$$(foreach x,$$($(2)_MESON_EXTRA_BINARIES),\n$$(x)):" \
+		    -e "/^\[properties\]$$$$/s:$$$$:$$(foreach x,$$($(2)_MESON_EXTRA_PROPERTIES),\n$$(x)):" \
+		    $$(call PKG_MESON_CROSSCONFIG_SED,$(2)_CFLAGS,$(2)_CXXFLAGS,$(2)_LDFLAGS,$(2)_FCFLAGS) \
+		    > $$($$(PKG)_BUILDDIR)/buildroot-meson-python/cross-compilation.conf)
 	(cd $$($$(PKG)_BUILDDIR)/; \
 		$$(PKG_PYTHON_$$($$(PKG)_SETUP_TYPE_UPPER)_ENV) \
 		$$($$(PKG)_ENV) \
 		$$(HOST_DIR)/bin/python3 \
 		$$(PKG_PYTHON_$$($$(PKG)_SETUP_TYPE_UPPER)_BUILD_CMD) \
-		$$($$(PKG)_BUILD_OPTS))
+		$$(if $$(filter meson-python,$$($$(PKG)_SETUP_TYPE)), \
+			$$(foreach opt,$$(PKG_MESON_PYTHON_TARGET_OPTS) $$($$(PKG)_MESON_OPTS),-Csetup-args=$$(opt)) \
+			-Csetup-args=--cross-file=$$($$(PKG)_BUILDDIR)/buildroot-meson-python/cross-compilation.conf \
+			$$($$(PKG)_BUILD_OPTS), \
+			$$($$(PKG)_BUILD_OPTS)))
 endef
 endif
 
@@ -433,7 +512,9 @@ define $(2)_BUILD_CMDS
 		$$($$(PKG)_ENV) \
 		$$(HOST_DIR)/bin/python3 \
 		$$(HOST_PKG_PYTHON_$$($$(PKG)_SETUP_TYPE_UPPER)_BUILD_CMD) \
-		$$($$(PKG)_BUILD_OPTS))
+		$$(if $$(filter meson-python,$$($$(PKG)_SETUP_TYPE)), \
+			$$(foreach opt,$$(PKG_MESON_PYTHON_HOST_OPTS) $$($$(PKG)_MESON_OPTS),-Csetup-args=$$(opt)) $$($$(PKG)_BUILD_OPTS), \
+			$$($$(PKG)_BUILD_OPTS)))
 endef
 endif
 
