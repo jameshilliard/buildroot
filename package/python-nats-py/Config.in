@@ -1,0 +1,6 @@
+config BR2_PACKAGE_PYTHON_NATS_PY
+	bool "python-nats-py"
+	help
+	  NATS client for Python.
+
+	  https://github.com/nats-io/nats.py
