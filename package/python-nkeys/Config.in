@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYTHON_NKEYS
+	bool "python-nkeys"
+	select BR2_PACKAGE_PYTHON_PYNACL # runtime
+	help
+	  A public-key signature system based on Ed25519 for the NATS
+	  ecosystem.
+
+	  https://github.com/nats-io/nkeys.py
