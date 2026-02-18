@@ -64,7 +64,7 @@ Index: b/src/Makefile
  	$(RANLIB) $@
  
 +$(LUA_SO): $(CORE_O) $(LIB_O)
-+	$(CC) -o $@.$(PKG_VERSION) -shared -Wl,-soname="$@.$(PKG_VERSION)" $?
++	$(CC) -o $@.$(PKG_VERSION) -shared -Wl,-soname="$@.$(PKG_VERSION)" $? $(LIBS)
 +	ln -fs $@.$(PKG_VERSION) $@
 +
 +ifneq (dynamic,$(BUILDMODE))
