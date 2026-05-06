@@ -46,7 +46,7 @@ endef
 
 define LIBPRI_INSTALL_TARGET_CMDS
 	$(foreach u,$(LIBPRI_UTILS),\
-		$(INSTALL) -D -m 0755 $(@D)/$(u) $(TARGET_DIR)/usr/sbin/$(u)$(sep))
+		$(INSTALL) -m 0755 $(@D)/$(u) $(TARGET_DIR)/usr/sbin/$(u)$(sep))
 	$(call LIBPRI_INSTALL_SO,$(TARGET_DIR))
 endef
 
