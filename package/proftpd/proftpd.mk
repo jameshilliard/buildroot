@@ -126,16 +126,16 @@ PROFTPD_MAKE = $(MAKE1)
 ifeq ($(BR2_PACKAGE_PERL),y)
 ifeq ($(BR2_PACKAGE_PROFTPD_MOD_QUOTATAB),y)
 define PROFTPD_INSTALL_FTPQUOTA
-	$(INSTALL) -D -m 0755 $(@D)/contrib/ftpquota $(TARGET_DIR)/usr/sbin/ftpquota
+	$(INSTALL) -m 0755 $(@D)/contrib/ftpquota $(TARGET_DIR)/usr/sbin/ftpquota
 endef
 endif
 define PROFTPD_INSTALL_FTPASSWD
-	$(INSTALL) -D -m 0755 $(@D)/contrib/ftpasswd $(TARGET_DIR)/usr/sbin/ftpasswd
+	$(INSTALL) -m 0755 $(@D)/contrib/ftpasswd $(TARGET_DIR)/usr/sbin/ftpasswd
 endef
 endif
 
 define PROFTPD_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/proftpd $(TARGET_DIR)/usr/sbin/proftpd
+	$(INSTALL) -m 0755 $(@D)/proftpd $(TARGET_DIR)/usr/sbin/proftpd
 	$(INSTALL) -m 0644 -D $(@D)/sample-configurations/basic.conf $(TARGET_DIR)/etc/proftpd.conf
 	$(SED) 's/^\(Group\s\+\)nogroup/\1nobody/' $(TARGET_DIR)/etc/proftpd.conf
 	$(PROFTPD_INSTALL_FTPQUOTA)
