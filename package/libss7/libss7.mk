@@ -49,7 +49,7 @@ endef
 
 define LIBSS7_INSTALL_TARGET_CMDS
 	$(foreach u,$(LIBSS7_UTILS),\
-		$(INSTALL) -D -m 0755 $(@D)/$(u) $(TARGET_DIR)/usr/sbin/$(u)$(sep))
+		$(INSTALL) -m 0755 $(@D)/$(u) $(TARGET_DIR)/usr/sbin/$(u)$(sep))
 	$(call LIBSS7_INSTALL_SO,$(TARGET_DIR))
 endef
 
