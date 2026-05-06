@@ -14,7 +14,7 @@ define TI_UIM_BUILD_CMDS
 endef
 
 define TI_UIM_INSTALL_TARGET_CMDS
-	$(INSTALL) -m 0755 -D $(@D)/uim \
+	$(INSTALL) -m 0755 $(@D)/uim \
 		$(TARGET_DIR)/usr/sbin/uim
 endef
 
