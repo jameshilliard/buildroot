@@ -40,7 +40,7 @@ endif
 
 define HV_INSTALL_TARGET_CMDS
 	$(foreach prog,$(HV_PROGS_y), \
-		$(INSTALL) -m 0755 -D $(LINUX_DIR)/tools/hv/$(prog) \
+		$(INSTALL) -m 0755 $(LINUX_DIR)/tools/hv/$(prog) \
 			$(TARGET_DIR)/usr/sbin/$(HV_$(prog))
 	)
 	$(HV_KVP_HELPER)
