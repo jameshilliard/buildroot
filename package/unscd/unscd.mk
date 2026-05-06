@@ -20,7 +20,7 @@ define UNSCD_BUILD_CMDS
 endef
 
 define UNSCD_INSTALL_TARGET_CMDS
-	$(INSTALL) -m 755 -D $(@D)/nscd $(TARGET_DIR)/usr/sbin/nscd
+	$(INSTALL) -m 755 $(@D)/nscd $(TARGET_DIR)/usr/sbin/nscd
 	$(INSTALL) -m 600 -D package/unscd/nscd.conf $(TARGET_DIR)/etc/nscd.conf
 endef
 
