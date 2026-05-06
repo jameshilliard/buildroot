@@ -14,7 +14,7 @@ define PARPROUTED_BUILD_CMDS
 endef
 
 define PARPROUTED_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/parprouted $(TARGET_DIR)/usr/sbin/parprouted
+	$(INSTALL) -m 0755 $(@D)/parprouted $(TARGET_DIR)/usr/sbin/parprouted
 endef
 
 $(eval $(generic-package))
