@@ -15,7 +15,7 @@ define TUNCTL_BUILD_CMDS
 endef
 
 define TUNCTL_INSTALL_TARGET_CMDS
-	$(INSTALL) -m 0755 -D $(@D)/tunctl $(TARGET_DIR)/usr/sbin/tunctl
+	$(INSTALL) -m 0755 $(@D)/tunctl $(TARGET_DIR)/usr/sbin/tunctl
 endef
 
 $(eval $(generic-package))
