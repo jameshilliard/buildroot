@@ -245,14 +245,14 @@ endef
 
 ifeq ($(BR2_PACKAGE_WPA_SUPPLICANT_CLI),y)
 define WPA_SUPPLICANT_INSTALL_CLI
-	$(INSTALL) -m 0755 -D $(@D)/$(WPA_SUPPLICANT_SUBDIR)/wpa_cli \
+	$(INSTALL) -m 0755 $(@D)/$(WPA_SUPPLICANT_SUBDIR)/wpa_cli \
 		$(TARGET_DIR)/usr/sbin/wpa_cli
 endef
 endif
 
 ifeq ($(BR2_PACKAGE_WPA_SUPPLICANT_PASSPHRASE),y)
 define WPA_SUPPLICANT_INSTALL_PASSPHRASE
-	$(INSTALL) -m 0755 -D $(@D)/$(WPA_SUPPLICANT_SUBDIR)/wpa_passphrase \
+	$(INSTALL) -m 0755 $(@D)/$(WPA_SUPPLICANT_SUBDIR)/wpa_passphrase \
 		$(TARGET_DIR)/usr/sbin/wpa_passphrase
 endef
 endif
@@ -281,7 +281,7 @@ endef
 endif
 
 define WPA_SUPPLICANT_INSTALL_TARGET_CMDS
-	$(INSTALL) -m 0755 -D $(@D)/$(WPA_SUPPLICANT_SUBDIR)/wpa_supplicant \
+	$(INSTALL) -m 0755 $(@D)/$(WPA_SUPPLICANT_SUBDIR)/wpa_supplicant \
 		$(TARGET_DIR)/usr/sbin/wpa_supplicant
 	$(INSTALL) -m 644 -D package/wpa_supplicant/wpa_supplicant.conf \
 		$(TARGET_DIR)/etc/wpa_supplicant.conf
