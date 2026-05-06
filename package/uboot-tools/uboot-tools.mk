@@ -92,14 +92,14 @@ endif
 
 ifeq ($(BR2_PACKAGE_UBOOT_TOOLS_FWPRINTENV),y)
 define UBOOT_TOOLS_INSTALL_FWPRINTENV
-	$(INSTALL) -m 0755 -D $(@D)/tools/env/fw_printenv $(TARGET_DIR)/usr/sbin/fw_printenv
+	$(INSTALL) -m 0755 $(@D)/tools/env/fw_printenv $(TARGET_DIR)/usr/sbin/fw_printenv
 	ln -sf fw_printenv $(TARGET_DIR)/usr/sbin/fw_setenv
 endef
 endif
 
 ifeq ($(BR2_PACKAGE_UBOOT_TOOLS_DUMPIMAGE),y)
 define UBOOT_TOOLS_INSTALL_DUMPIMAGE
-	$(INSTALL) -m 0755 -D $(@D)/tools/dumpimage $(TARGET_DIR)/usr/sbin/dumpimage
+	$(INSTALL) -m 0755 $(@D)/tools/dumpimage $(TARGET_DIR)/usr/sbin/dumpimage
 endef
 endif
 
