@@ -14,7 +14,7 @@ define UMTPRD_BUILD_CMDS
 endef
 
 define UMTPRD_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/umtprd $(TARGET_DIR)/usr/sbin/umtprd
+	$(INSTALL) -m 0755 $(@D)/umtprd $(TARGET_DIR)/usr/sbin/umtprd
 endef
 
 $(eval $(generic-package))
