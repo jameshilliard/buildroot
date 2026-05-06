@@ -14,7 +14,7 @@ define P910ND_BUILD_CMDS
 endef
 
 define P910ND_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/p910nd $(TARGET_DIR)/usr/sbin/p910nd
+	$(INSTALL) -m 0755 $(@D)/p910nd $(TARGET_DIR)/usr/sbin/p910nd
 endef
 
 $(eval $(generic-package))
