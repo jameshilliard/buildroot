@@ -16,7 +16,7 @@ UDPCAST_MAKE_OPTS = $(UDPCAST_TARGETS)
 
 define UDPCAST_INSTALL_TARGET_CMDS
 	$(foreach f,$(UDPCAST_TARGETS),\
-		$(INSTALL) -D -m 755 $(@D)/$(f) $(TARGET_DIR)/usr/sbin/$(f)
+		$(INSTALL) -m 755 $(@D)/$(f) $(TARGET_DIR)/usr/sbin/$(f)
 	)
 endef
 
