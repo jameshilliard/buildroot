@@ -165,7 +165,7 @@ define TI_GFX_INSTALL_BINS_CMDS
 			$(TARGET_DIR)/usr/bin/$(bin)
 	)
 	$(if $(BR2_PACKAGE_TI_GFX_DEBUG),
-		$(INSTALL) -D -m 0755 package/ti-gfx/esrev.sh \
+		$(INSTALL) -m 0755 package/ti-gfx/esrev.sh \
 			$(TARGET_DIR)/usr/sbin/esrev
 	)
 endef
