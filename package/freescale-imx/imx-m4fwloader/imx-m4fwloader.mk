@@ -15,7 +15,7 @@ define IMX_M4FWLOADER_BUILD_CMDS
 endef
 
 define IMX_M4FWLOADER_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 755 $(@D)/imx-m4fwloader \
+	$(INSTALL) -m 755 $(@D)/imx-m4fwloader \
 		$(TARGET_DIR)/usr/sbin/imx-m4fwloader
 endef
 
