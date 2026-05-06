@@ -14,7 +14,7 @@ define PTPD_BUILD_CMDS
 endef
 
 define PTPD_INSTALL_TARGET_CMDS
-	$(INSTALL) -m 755 -D $(@D)/src/ptpd $(TARGET_DIR)/usr/sbin/ptpd
+	$(INSTALL) -m 755 $(@D)/src/ptpd $(TARGET_DIR)/usr/sbin/ptpd
 endef
 
 define PTPD_INSTALL_INIT_SYSV
