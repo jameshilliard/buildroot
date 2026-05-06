@@ -14,7 +14,7 @@ define BABELD_BUILD_CMDS
 endef
 
 define BABELD_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 755 $(@D)/babeld $(TARGET_DIR)/usr/sbin/babeld
+	$(INSTALL) -m 755 $(@D)/babeld $(TARGET_DIR)/usr/sbin/babeld
 endef
 
 define BABELD_INSTALL_INIT_SYSV
