@@ -44,7 +44,7 @@ define SPIDEV_TEST_BUILD_CMDS
 endef
 
 define SPIDEV_TEST_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 755 $(@D)/spidev_test \
+	$(INSTALL) -m 755 $(@D)/spidev_test \
 		$(TARGET_DIR)/usr/sbin/spidev_test
 endef
 
