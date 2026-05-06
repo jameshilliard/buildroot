@@ -41,7 +41,7 @@ endef
 define RESTORECOND_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0644 -D $(@D)/restorecond.conf $(TARGET_DIR)/etc/selinux/restorecond.conf
 	$(INSTALL) -m 0644 -D $(@D)/restorecond_user.conf $(TARGET_DIR)/etc/selinux/restorecond_user.conf
-	$(INSTALL) -m 0755 -D $(@D)/restorecond $(TARGET_DIR)/usr/sbin/restorecond
+	$(INSTALL) -m 0755 $(@D)/restorecond $(TARGET_DIR)/usr/sbin/restorecond
 endef
 
 $(eval $(generic-package))
