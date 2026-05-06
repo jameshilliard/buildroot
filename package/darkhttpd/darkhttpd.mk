@@ -15,7 +15,7 @@ define DARKHTTPD_BUILD_CMDS
 endef
 
 define DARKHTTPD_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/darkhttpd \
+	$(INSTALL) -m 0755 $(@D)/darkhttpd \
 		$(TARGET_DIR)/usr/sbin/darkhttpd
 endef
 
