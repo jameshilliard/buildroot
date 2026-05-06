@@ -15,7 +15,7 @@ define NETHOGS_BUILD_CMDS
 endef
 
 define NETHOGS_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/src/nethogs $(TARGET_DIR)/usr/sbin/nethogs
+	$(INSTALL) -m 0755 $(@D)/src/nethogs $(TARGET_DIR)/usr/sbin/nethogs
 endef
 
 $(eval $(generic-package))
