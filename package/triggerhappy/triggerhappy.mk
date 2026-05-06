@@ -29,8 +29,8 @@ endif
 
 define TRIGGERHAPPY_INSTALL_TARGET_CMDS
 	$(INSTALL) -d $(TARGET_DIR)/etc/triggerhappy/triggers.d
-	$(INSTALL) -D -m 0755 $(@D)/thd $(TARGET_DIR)/usr/sbin/thd
-	$(INSTALL) -D -m 0755 $(@D)/th-cmd $(TARGET_DIR)/usr/sbin/th-cmd
+	$(INSTALL) -m 0755 $(@D)/thd $(TARGET_DIR)/usr/sbin/thd
+	$(INSTALL) -m 0755 $(@D)/th-cmd $(TARGET_DIR)/usr/sbin/th-cmd
 	$(TRIGGERHAPPY_INSTALL_UDEV_RULE)
 endef
 
