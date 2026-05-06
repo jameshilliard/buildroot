@@ -67,7 +67,7 @@ endef
 # 500 OOPS: vsftpd: refusing to run with writable root inside chroot()
 # That's why we have to adjust the permissions of /home/ftp
 define VSFTPD_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 755 $(@D)/vsftpd $(TARGET_DIR)/usr/sbin/vsftpd
+	$(INSTALL) -m 755 $(@D)/vsftpd $(TARGET_DIR)/usr/sbin/vsftpd
 	test -f $(TARGET_DIR)/etc/vsftpd.conf || \
 		$(INSTALL) -D -m 644 $(@D)/vsftpd.conf \
 			$(TARGET_DIR)/etc/vsftpd.conf
