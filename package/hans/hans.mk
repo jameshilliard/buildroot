@@ -14,7 +14,7 @@ define HANS_BUILD_CMDS
 endef
 
 define HANS_INSTALL_TARGET_CMDS
-	$(INSTALL) -m 755 -D $(@D)/hans $(TARGET_DIR)/usr/sbin/hans
+	$(INSTALL) -m 755 $(@D)/hans $(TARGET_DIR)/usr/sbin/hans
 endef
 
 $(eval $(generic-package))
