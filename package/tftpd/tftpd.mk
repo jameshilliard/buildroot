@@ -19,7 +19,7 @@ TFTPD_AUTORECONF_OPTS = --include=$(@D)/autoconf/m4
 
 define TFTPD_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/tftp/tftp $(TARGET_DIR)/usr/bin/tftp
-	$(INSTALL) -D $(@D)/tftpd/tftpd $(TARGET_DIR)/usr/sbin/tftpd
+	$(INSTALL) $(@D)/tftpd/tftpd $(TARGET_DIR)/usr/sbin/tftpd
 endef
 
 define TFTPD_INSTALL_INIT_SYSV
