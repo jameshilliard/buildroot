@@ -15,7 +15,7 @@ define ARPTABLES_BUILD_CMDS
 endef
 
 define ARPTABLES_INSTALL_TARGET_CMDS
-	$(INSTALL) -m 755 -D $(@D)/arptables-legacy \
+	$(INSTALL) -m 755 $(@D)/arptables-legacy \
 		$(TARGET_DIR)/usr/sbin/arptables-legacy
 endef
 
