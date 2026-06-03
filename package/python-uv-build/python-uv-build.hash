@@ -1,0 +1,5 @@
+# Locally calculated after vendoring
+sha256  75eccb7a450a78848efe73900df9abcd598196e9d9f3d4d11d2ac57e606ac44a  python-uv-build-0.11.20-cargo5.tar.gz
+# Locally computed sha256 checksums
+sha256  c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4  LICENSE-APACHE
+sha256  860e3d7a86b84e6a7012c7a635fc64df475cebc6cce34dfeb73a5982ec58176c  LICENSE-MIT
